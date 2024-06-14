@@ -7,8 +7,9 @@ from src.Registry import Registry
 
 def main():
     alice = Registry()
+    print("Alice:", alice, '\n')
+
     alice_sig = alice.schnorr_signature()
-    print("Alice:", alice)
     print("Alice Schnorr Signature:", alice_sig)
     print("Valid Signature?", alice_sig.prove(), '\n')
 

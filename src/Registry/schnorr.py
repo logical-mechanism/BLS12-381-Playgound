@@ -2,7 +2,6 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from src.bls import combine, scale
 from src.Registry.element import Element
 from src.sha3_256 import fiat_shamir_heuristic
 
@@ -17,11 +16,13 @@ class Schnorr:
     registry: 'Registry'
 
     def __str__(self):
-        return f"Schnorr(z={self.z}, r={self.r}, registry={self.registry})"
+        return f"Schnorr(z={self.z}, r={self.r.value}, registry={self.registry})"
 
     def prove(self) -> bool:
-        g_z = scale(self.registry.g.value, int(self.z, 16))
+        z = int(self.z, 16)
+        g_z = self.registry.g * z
         c_hex = fiat_shamir_heuristic(self.registry.g.value, self.r.value, self.registry.u.value)
-        u_c = scale(self.registry.u.value, int(c_hex, 16))
-        rhs = combine(self.r.value, u_c)
+        c = int(c_hex, 16)
+        u_c = self.registry.u * c
+        rhs = self.r + u_c
         return g_z == rhs

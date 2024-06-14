@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls import point, rng, scale
+from src.bls import point, rng
 from src.Registry.element import Element
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.schnorr import Schnorr
@@ -32,25 +32,25 @@ class Registry:
     def rerandomize(self, scalar: int | None) -> None:
         if scalar is None:
             scalar = rng()
-        self.g = Element(scale(self.g.value, scalar))
-        self.u = Element(scale(self.u.value, scalar))
+        self.g = self.g * scalar
+        self.u = self.u * scalar
 
     def rng(self) -> int:
         return rng()
 
     def schnorr_signature(self) -> Schnorr:
         r = rng()
-        g_r = scale(self.g.value, r)
-        c_hex = fiat_shamir_heuristic(self.g.value, g_r, self.u.value)
+        g_r = self.g * r
+        c_hex = fiat_shamir_heuristic(self.g.value, g_r.value, self.u.value)
         c = int(c_hex, 16)
         z = r + c * self.x
-        return Schnorr(hexify(z), Element(g_r), self)
+        return Schnorr(hexify(z), g_r, self)
 
     def fiat_shamir_signature(self, message: str):
         m = generate(message)
         r = rng()
-        g_r = scale(self.g.value, r)
-        eb = generate(m + g_r)
+        g_r = self.g * r
+        eb = generate(m + g_r.value)
         e = int(eb, 16)
         z = r + self.x * e
-        return FiatShamir(message, hexify(z), Element(g_r), self)
+        return FiatShamir(message, hexify(z), g_r, self)

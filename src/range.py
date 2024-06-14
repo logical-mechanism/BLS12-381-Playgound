@@ -1,4 +1,5 @@
-from src.bls import combine, field_order, point, scale
+from src.bls import field_order, point
+from src.Registry.element import Element
 
 
 def prove(range_proof: dict) -> bool:
@@ -9,7 +10,7 @@ def prove(range_proof: dict) -> bool:
     Y = range_proof["y"]
     W = range_proof["w"]
 
-    return A == combine(combine(B, Y), W) and combine(combine(A, B), W) == combine(scale(D, 2), Y)
+    return A == B + Y + W and A + B + W == 2 * D + Y
 
 
 def generate(d: int, a: int = field_order - 1, b: int = 1) -> dict:
@@ -17,9 +18,9 @@ def generate(d: int, a: int = field_order - 1, b: int = 1) -> dict:
     w = d - b
 
     return {
-        'a': point(a),
-        'b': point(b),
-        'd': point(d),
-        'y': point(y),
-        'w': point(w),
+        'a': Element(point(a)),
+        'b': Element(point(b)),
+        'd': Element(point(d)),
+        'y': Element(point(y)),
+        'w': Element(point(w)),
     }

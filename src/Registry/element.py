@@ -1,7 +1,7 @@
 # src/Registry/element.py
 from dataclasses import dataclass
 
-from src.bls import compress, uncompress
+from src.bls import combine, compress, scale, uncompress
 from src.sha3_256 import generate
 
 
@@ -20,3 +20,22 @@ class Element:
 
     def __str__(self):
         return self.value
+
+    def __add__(self, other):
+        if not isinstance(other, Element):
+            return NotImplemented
+        return Element(combine(self.value, other.value))
+
+    def __mul__(self, other):
+        if not isinstance(other, int):
+            return NotImplemented
+        return Element(scale(self.value, other))
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __eq__(self, other):
+        if not isinstance(other, Element):
+            return NotImplemented
+        # Equality logic based on value
+        return self.value == other.value
