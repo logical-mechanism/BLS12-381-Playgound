@@ -22,9 +22,26 @@ def generate(input_string: str) -> str:
 
 
 def fiat_shamir_heuristic(gb: str, grb: str, ub: str) -> str:
+    """
+    Applies the Fiat-Shamir heuristic to generate a hash.
+
+    Parameters:
+    gb (str): The first input string, typically representing a value in hex.
+    grb (str): The second input string, typically representing a value in hex.
+    ub (str): The third input string, typically representing a value in hex.
+
+    Returns:
+    str: The resulting hash as a hexadecimal string.
+    """
+    # Concatenate the input strings
     concatenated_bytes = gb + grb + ub
+
+    # Convert the concatenated hex string to bytes
     unhexed_bytes = unhexlify(concatenated_bytes)
+
+    # Compute the SHA-3 (256-bit) hash of the bytes and convert to a hex string
     hash_result = sha3_256(unhexed_bytes).digest().hex()
+
     return hash_result
 
 
@@ -32,5 +49,5 @@ def fiat_shamir_heuristic(gb: str, grb: str, ub: str) -> str:
 if __name__ == "__main__":
     input_string = "Hello, world!"
     hash_digest = generate(input_string)
-    print("SHA3-256 Hash:", hash_digest) 
+    print("SHA3-256 Hash:", hash_digest)
     print(fiat_shamir_heuristic("", "", ""))
