@@ -1,49 +1,45 @@
+from dataclasses import dataclass, field
+
 from src.bls import field_order, point
 from src.Registry.element import Element
 
 
-def prove(range_proof: dict) -> bool:
-    """
-    Verifies the correctness of a range proof.
+@dataclass
+class Range:
+    d: int
+    a: int | None = None
+    b: int | None = None
+    A: Element = field(init=False)
+    B: Element = field(init=False)
+    D: Element = field(init=False)
+    Y: Element = field(init=False)
+    W: Element = field(init=False)
 
-    Parameters:
-    range_proof (dict): A dictionary containing the components of the range proof.
+    def __post_init__(self):
+        # set up A
+        if self.a is None:
+            self.a = field_order - 1
+        self.A = Element(point(self.a))
 
-    Returns:
-    bool: True if the range proof is valid, False otherwise.
-    """
-    # Extract the components of the range proof from the dictionary
-    A = range_proof["a"]
-    B = range_proof["b"]
-    D = range_proof["d"]
-    Y = range_proof["y"]
-    W = range_proof["w"]
+        # set up B
+        if self.b is None:
+            self.b = 1
+        self.B = Element(point(self.b))
 
-    # Check the validity of the range proof by verifying the provided equations
-    return A == B + Y + W and A + B + W == 2 * D + Y
+        # Set up D
+        self.D = Element(point(self.d))
 
+        # Set up Y
+        y = self.a - self.d
+        self.Y = Element(point(y))
 
-def generate(d: int, a: int = field_order - 1, b: int = 1) -> dict:
-    """
-    Generates a range proof dictionary based on the provided values.
+        # Set up W
+        w = self.d - self.b
+        self.W = Element(point(w))
 
-    Parameters:
-    d (int): The value to be used in the range proof.
-    a (int): The starting value for the range proof (default is field_order - 1).
-    b (int): The ending value for the range proof (default is 1).
+    def __str__(self):
+        return f"Range(A={self.A.value}, B={self.B.value}, D={self.D.value}, Y={self.Y.value}, W={self.W.value})"
 
-    Returns:
-    dict: A dictionary containing the components of the range proof.
-    """
-    # Calculate y and w based on the provided values
-    y = a - d
-    w = d - b
-
-    # Return a dictionary containing the elements of the range proof
-    return {
-        'a': Element(point(a)),
-        'b': Element(point(b)),
-        'd': Element(point(d)),
-        'y': Element(point(y)),
-        'w': Element(point(w)),
-    }
+    def prove(self) -> bool:
+        # Check the validity of the range proof by verifying the provided equations
+        return self.A == self.B + self.Y + self.W and self.A + self.B + self.W == 2 * self.D + self.Y

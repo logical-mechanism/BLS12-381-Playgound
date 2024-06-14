@@ -1,5 +1,7 @@
 # A Simple BLS12-381 Playground
 
+A simple playground for experimenting with G1Element manipulation.
+
 # Setup
 
 ```bash
