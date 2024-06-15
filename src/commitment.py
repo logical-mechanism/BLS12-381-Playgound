@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from src.bls import point, rng
 from src.Registry.element import Element
+from src.sha3_256 import generate
 
 
 @dataclass
@@ -18,6 +19,9 @@ class Commitment:
         if self.r is None:
             self.r = rng()
         self.c = self.r * g + self.v * h
+
+    def hash(self) -> str:
+        return generate(self.c.value)
 
     def __str__(self):
         return f"Commitment(c={self.c.value}, r={self.r}, v={self.v})"
