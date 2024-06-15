@@ -19,7 +19,8 @@ def no_fee_no_leak():
         left += i
     for o in output_commitments:
         right += o
-    print(left == right and all([i.prove() for i in input_range_proofs]) and all(o.prove() for o in output_range_proofs))
+    print(left == right and all([i.prove() for i in input_range_proofs]) and all(
+        o.prove() for o in output_range_proofs))
 
 
 def no_leak():
@@ -40,7 +41,8 @@ def no_leak():
         left += i
     for o in output_commitments:
         right += o
-    print(left == right and all([i.prove() for i in input_range_proofs]) and all(o.prove() for o in output_range_proofs))
+    print(left == right and all([i.prove() for i in input_range_proofs]) and all(
+        o.prove() for o in output_range_proofs))
 
 
 def fee_and_leak():
@@ -50,7 +52,7 @@ def fee_and_leak():
     input_commitments = [Commitment(123), Commitment(321)]
     input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
     # the output_commitments
-    output_commitments = [Commitment(222-leak), Commitment(222 - fee)]
+    output_commitments = [Commitment(222 - leak), Commitment(222 - fee)]
     output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
@@ -62,7 +64,8 @@ def fee_and_leak():
         left += i
     for o in output_commitments:
         right += o
-    print(left == right and all([i.prove() for i in input_range_proofs]) and all(o.prove() for o in output_range_proofs))
+    print(left == right and all([i.prove() for i in input_range_proofs]) and all(
+        o.prove() for o in output_range_proofs))
 
 
 def bad_proof():
@@ -72,7 +75,7 @@ def bad_proof():
     input_commitments = [Commitment(1233), Commitment(321)]
     input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
     # the output_commitments
-    output_commitments = [Commitment(222-leak), Commitment(222 - fee)]
+    output_commitments = [Commitment(222 - leak), Commitment(222 - fee)]
     output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
@@ -84,7 +87,8 @@ def bad_proof():
         left += i
     for o in output_commitments:
         right += o
-    print(left == right and all([i.prove() for i in input_range_proofs]) and all(o.prove() for o in output_range_proofs))
+    print(left == right and all([i.prove() for i in input_range_proofs]) and all(
+        o.prove() for o in output_range_proofs))
 
 
 if __name__ == "__main__":
