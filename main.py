@@ -50,10 +50,10 @@ def main():
     c1 = Commitment(v1)
     print(c0)
     print(c1)
-    cc = c0 + c1
-    print(cc)
-    print(cc == cc)
+    print(c0 + c1)
     print(Commitment(0))
+    print(Commitment(v0, 0))
+    print(Commitment(0, 0))
 
 
 if __name__ == "__main__":
