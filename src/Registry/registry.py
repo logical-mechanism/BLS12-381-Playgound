@@ -62,4 +62,6 @@ class Registry:
         M = Element(point(m))
         r = rng()
         s = self.u * r
-        return ElGamal(self.g * r, m + s, generate(M.value))
+        c1 = self.g * r
+        c2 = M + s
+        return ElGamal(c1, c2, generate(M.value))

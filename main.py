@@ -24,6 +24,10 @@ def main():
     print("Alice Fiat Shamir Signature:", alice_msg_sig)
     print("Valid Signature?", alice_msg_sig.prove(), '\n')
 
+    alice_elgamal_sig = alice.elgamal_encryption(msg)
+    print("Alice ElGamal Signature:", alice_elgamal_sig)
+    print("Valid Signature?", alice_elgamal_sig.prove(alice_elgamal_sig.c1 * alice.x), '\n')
+
     alice_random = copy.deepcopy(alice)
     y = alice.rng()
     alice_random.rerandomize(y)
