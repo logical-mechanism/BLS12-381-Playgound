@@ -37,5 +37,4 @@ class Element:
     def __eq__(self, other):
         if not isinstance(other, Element):
             return NotImplemented
-        # Equality logic based on value
         return self.value == other.value

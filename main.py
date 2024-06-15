@@ -1,7 +1,11 @@
 # main.py
 import copy
+from random import randrange
 
+from src.bls import field_order
+from src.commitment import Commitment
 from src.diffie_hellman_tuples import proveDHTuple
+from src.range import Range
 from src.Registry import Registry
 
 
@@ -32,6 +36,24 @@ def main():
 
     outcome = proveDHTuple(y, alice, alice_random)
     print("Re-Randomized Valid:", outcome)
+
+    d = randrange(1, field_order - 1)
+    print(f"Prove {d} exists between 1 and {field_order}")
+    range_proof = Range(d)
+    print("Range Proof:", range_proof)
+    print("Is it valid?", range_proof.prove(), '\n')
+
+    print("Commitment:")
+    v0 = 123456789
+    v1 = 987654321
+    c0 = Commitment(v0)
+    c1 = Commitment(v1)
+    print(c0)
+    print(c1)
+    cc = c0 + c1
+    print(cc)
+    print(cc == cc)
+    print(Commitment(0))
 
 
 if __name__ == "__main__":
