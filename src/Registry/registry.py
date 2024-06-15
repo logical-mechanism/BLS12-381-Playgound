@@ -4,6 +4,7 @@ from src.bls import point, rng
 from src.Registry.element import Element
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.schnorr import Schnorr
+from src.Registry.elgamal import ElGamal
 from src.sha3_256 import fiat_shamir_heuristic, generate
 
 
@@ -54,3 +55,11 @@ class Registry:
         e = int(eb, 16)
         z = r + self.x * e
         return FiatShamir(message, hexify(z), g_r, self)
+
+    def elgamal_encryption(self, message: str):
+        msg_hash = generate(message)
+        m = int(msg_hash, 16)
+        M = Element(point(m))
+        r = rng()
+        s = self.u * r
+        return ElGamal(self.g * r, m + s, generate(M.value))

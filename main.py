@@ -13,6 +13,8 @@ def main():
     alice = Registry()
     print("Alice:", alice, '\n')
 
+    print("Alice Inverse Public Element:", ~alice.u)
+
     alice_sig = alice.schnorr_signature()
     print("Alice Schnorr Signature:", alice_sig)
     print("Valid Signature?", alice_sig.prove(), '\n')

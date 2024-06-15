@@ -1,7 +1,7 @@
 # src/Registry/element.py
 from dataclasses import dataclass
 
-from src.bls import combine, compress, scale, uncompress
+from src.bls import combine, compress, scale, uncompress, invert
 from src.sha3_256 import generate
 
 
@@ -33,6 +33,9 @@ class Element:
 
     def __rmul__(self, other):
         return self.__mul__(other)
+
+    def __invert__(self):
+        return Element(invert(self.value))
 
     def __eq__(self, other):
         if not isinstance(other, Element):
