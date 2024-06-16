@@ -40,7 +40,7 @@ class Registry:
         return rng()
 
     def schnorr_signature(self) -> Schnorr:
-        r = rng()
+        r = self.rng()
         g_r = self.g * r
         c_hex = fiat_shamir_heuristic(self.g.value, g_r.value, self.u.value)
         c = int(c_hex, 16)
@@ -49,7 +49,7 @@ class Registry:
 
     def fiat_shamir_signature(self, message: str):
         m = generate(message)
-        r = rng()
+        r = self.rng()
         g_r = self.g * r
         eb = generate(m + g_r.value)
         e = int(eb, 16)
@@ -60,7 +60,7 @@ class Registry:
         msg_hash = generate(message)
         m = int(msg_hash, 16)
         M = Element(point(m))
-        r = rng()
+        r = self.rng()
         s = self.u * r
         c1 = self.g * r
         c2 = M + s
