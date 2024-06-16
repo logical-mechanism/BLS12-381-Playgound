@@ -154,5 +154,6 @@ if __name__ == "__main__":
     print(added_g1 == g1_point(2))
 
     g2 = g2_point(1)
-    print("G1 Point", g1, len(g1))
+    added_g2 = combine(g2, g2)
     print("G2 Point", g2, len(g2))
+    print(added_g2 == g2_point(2))
