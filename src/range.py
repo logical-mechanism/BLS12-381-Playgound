@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls import field_order, point
+from src.bls12_381 import field_order, point
 from src.Registry.element import Element
 
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls import point, rng
+from src.bls12_381 import point, rng
 from src.Registry.element import Element
 from src.sha3_256 import generate
 

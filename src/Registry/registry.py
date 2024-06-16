@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 
-from src.bls import point, rng
+from src.bls12_381 import point, rng
 from src.Registry.element import Element
+from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.schnorr import Schnorr
-from src.Registry.elgamal import ElGamal
 from src.sha3_256 import fiat_shamir_heuristic, generate
 
 

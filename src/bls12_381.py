@@ -1,10 +1,9 @@
 import secrets
 
-from py_ecc.bls import G2ProofOfPossession as bls
 from py_ecc.bls.g2_primitives import G1_to_pubkey, pubkey_to_G1
-from py_ecc.optimized_bls12_381 import add, multiply, neg
+from py_ecc.optimized_bls12_381 import G1, add, curve_order, multiply, neg
 
-field_order = 52435875175126190479447740508185965837690552500527637822603658699938581184513
+field_order = curve_order
 
 
 def rng() -> int:
@@ -33,10 +32,7 @@ def point(scalar: int) -> str:
     Returns:
         bytes: The resulting BLS12-381 point in compressed format.
     """
-    pk = bls.SkToPk(scalar)
-    pk_bytes = pk
-    pk_hex = pk_bytes.hex()
-    return pk_hex
+    return G1_to_pubkey(multiply(G1, scalar)).hex()
 
 
 def uncompress(hex_str: str) -> tuple:
@@ -76,8 +72,7 @@ def scale(g1_element: str, scalar: int) -> str:
     Returns:
         str: The resulting scaled G1 point.
     """
-    element = uncompress(g1_element)
-    return compress(multiply(element, scalar))
+    return compress(multiply(uncompress(g1_element), scalar))
 
 
 def combine(left_element: str, right_element: str) -> str:
@@ -91,9 +86,7 @@ def combine(left_element: str, right_element: str) -> str:
     Returns:
         str: The resulting combined G1 point.
     """
-    lelement = uncompress(left_element)
-    relement = uncompress(right_element)
-    return compress(add(lelement, relement))
+    return compress(add(uncompress(left_element), uncompress(right_element)))
 
 
 def invert(g1_element: str) -> str:
@@ -106,8 +99,7 @@ def invert(g1_element: str) -> str:
     Returns:
         str: The resulting combined G1 point.
     """
-    element = uncompress(g1_element)
-    return compress(neg(element))
+    return compress(neg(uncompress(g1_element)))
 
 
 # Example usage:

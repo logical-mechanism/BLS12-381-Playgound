@@ -1,7 +1,7 @@
 # src/Registry/element.py
 from dataclasses import dataclass
 
-from src.bls import combine, compress, scale, uncompress, invert
+from src.bls12_381 import combine, compress, invert, scale, uncompress
 from src.sha3_256 import generate
 
 

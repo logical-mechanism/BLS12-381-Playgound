@@ -2,7 +2,7 @@
 import copy
 from random import randrange
 
-from src.bls import field_order
+from src.bls12_381 import field_order
 from src.commitment import Commitment
 from src.diffie_hellman_tuples import proveDHTuple
 from src.range import Range

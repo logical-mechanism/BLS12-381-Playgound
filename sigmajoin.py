@@ -1,7 +1,7 @@
 # main.py
 import copy
 
-from src.bls import rng
+from src.bls12_381 import rng
 from src.diffie_hellman_tuples import proveDHTuple
 from src.Registry import Registry
 
