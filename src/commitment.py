@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import point, rng
+from src.bls12_381 import g1_point, rng
 from src.Registry.element import Element
 from src.sha3_256 import generate
 
@@ -13,8 +13,8 @@ class Commitment:
 
     def __post_init__(self):
         # this are fixed inside of a commitment
-        g = Element(point(1))
-        h = Element(point(2))
+        g = Element(g1_point(1))
+        h = Element(g1_point(2))
         # unique to this commitment
         if self.r is None:
             self.r = rng()

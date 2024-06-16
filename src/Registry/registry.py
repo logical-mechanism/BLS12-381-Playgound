@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import point, rng
+from src.bls12_381 import g1_point, rng
 from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
@@ -24,8 +24,8 @@ class Registry:
     def __post_init__(self):
         if self.x is None:
             self.x = rng()
-        self.g = Element(point(1))
-        self.u = Element(point(self.x))
+        self.g = Element(g1_point(1))
+        self.u = Element(g1_point(self.x))
 
     def __str__(self):
         return f"Registry(g={self.g}, u={self.u})"
@@ -59,7 +59,7 @@ class Registry:
     def elgamal_encryption(self, message: str):
         msg_hash = generate(message)
         m = int(msg_hash, 16)
-        M = Element(point(m))
+        M = Element(g1_point(m))
         r = self.rng()
         s = self.u * r
         c1 = self.g * r
