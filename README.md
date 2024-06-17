@@ -1,6 +1,6 @@
 # A Simple BLS12-381 Playground
 
-A simple playground for experimenting with BLS12-381 Element manipulation.
+A simple playground for experimenting with BLS12-381 element manipulation.
 
 # Setup
 

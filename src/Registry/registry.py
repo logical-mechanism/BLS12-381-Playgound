@@ -30,6 +30,9 @@ class Registry:
     def __str__(self):
         return f"Registry(g={self.g}, u={self.u})"
 
+    def hash(self) -> str:
+        return generate(self.g.value + self.u.value)
+
     def rerandomize(self, scalar: int | None) -> None:
         if scalar is None:
             scalar = rng()
