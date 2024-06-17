@@ -4,7 +4,9 @@ from py_ecc.bls.g2_primitives import (G1_to_pubkey, G2_to_signature,
                                       pubkey_to_G1, signature_to_G2)
 from py_ecc.fields import optimized_bls12_381_FQ as FQ
 from py_ecc.fields import optimized_bls12_381_FQ2 as FQ2
-from py_ecc.optimized_bls12_381 import G1, G2, add, curve_order, multiply, neg
+from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
+from py_ecc.optimized_bls12_381 import (G1, G2, add, curve_order, multiply,
+                                        neg, pairing)
 
 field_order = curve_order
 
@@ -125,6 +127,21 @@ def invert(element: str) -> str:
     return compress(neg(uncompress(element)))
 
 
+def pair(g2_element: str, g1_element: str, final_exponentiate: bool = True) -> FQ12:
+    """
+    Compute the pairing operation on elliptic curve points represented as strings.
+
+    Args:
+        g2_element (str): A string representation of a point on G2 elliptic curve.
+        g1_element (str): A string representation of a point on G1 elliptic curve.
+        final_exponentiate (bool, optional): Whether to perform final exponentiation in the pairing computation. Defaults to True.
+
+    Returns:
+        FQ12: Result of the pairing operation as an element of the FQ12 field.
+    """
+    return pairing(uncompress(g2_element), uncompress(g1_element), final_exponentiate)
+
+
 # Example usage:
 if __name__ == "__main__":
     scalar = 123456789  # Example scalar value
@@ -137,6 +154,7 @@ if __name__ == "__main__":
     print(recompressed_g1_point == compressed_g1_point)
 
     g1 = g1_point(1)
+    print("Invert g1", invert(g1))
     g_scaled = scale(g1, scalar)
     print(compressed_g1_point == g_scaled)
 
@@ -154,6 +172,35 @@ if __name__ == "__main__":
     print(added_g1 == g1_point(2))
 
     g2 = g2_point(1)
+    print("Invert g2", invert(g2))
     added_g2 = combine(g2, g2)
     print("G2 Point", g2, len(g2))
-    print(added_g2 == g2_point(2))
+    print(added_g2 == g2_point(2), '\n')
+
+    u1g1 = g1_point(1)
+    u2g1 = g1_point(2)
+    v1g2 = g2_point(1)
+    v2g2 = g2_point(2)
+    print("e(U1+U2,V1)=e(U1,V1) x e(U2,V1)")
+    pr = pair(v1g2, combine(u1g1, u2g1))
+    pl = pair(v1g2, u1g1) * pair(v1g2, u2g1)
+    print(pr == pl)
+
+    print("e(U1,V1+V2)=e(U1,V1) x e(U1,V2)")
+    pl = pair(combine(v1g2, v2g2), u1g1)
+    pr = pair(v1g2, u1g1) * pair(v2g2, u1g1)
+    print(pr == pl)
+
+    print("e(aU,bV)=e(U,V)^(a*b)")
+    a = 20
+    b = 10
+    au = scale(u1g1, a)
+    bv = scale(v1g2, b)
+    pl = pair(bv, au)
+    pr = pair(v1g2, u1g1) ** (a * b)
+    print(pr == pl)
+
+    print("e(G,H)^k=1")
+    print(pair(v1g2, u1g1) ** 0 == FQ12.one())
+    print("e(Q,P)^(x^2 - x - 42)=1")
+    print(pair(scale(v1g2, 7), scale(u1g1, 7)) * pair(invert(v1g2), scale(u1g1, 7)) * pair(invert(v1g2), scale(u1g1, 42)) == FQ12.one())
