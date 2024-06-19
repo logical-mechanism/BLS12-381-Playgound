@@ -2,6 +2,10 @@ from binascii import unhexlify
 from hashlib import sha3_256
 
 
+def hash_function():
+    return sha3_256
+
+
 def generate(input_string: str) -> str:
     """
     Calculates the SHA3-256 hash digest of the input string.
