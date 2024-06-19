@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import g1_point, rng
+from src.bls12_381 import g1_point, hash_to_g2, rng
+from src.Registry.boneh_lynn_shacham import BonehLynnShacham
 from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
@@ -44,7 +45,7 @@ class Registry:
         z = r + c * self.x
         return Schnorr(hexify(z), g_r, self)
 
-    def fiat_shamir_signature(self, message: str):
+    def fiat_shamir_signature(self, message: str) -> FiatShamir:
         m = generate(message)
         r = self.rng()
         g_r = self.g * r
@@ -53,7 +54,7 @@ class Registry:
         z = r + self.x * e
         return FiatShamir(message, hexify(z), g_r, self)
 
-    def elgamal_encryption(self, message: str):
+    def elgamal_encryption(self, message: str) -> ElGamal:
         msg_hash = generate(message)
         m = int(msg_hash, 16)
         M = Element(g1_point(m))
@@ -62,3 +63,8 @@ class Registry:
         c1 = self.g * r
         c2 = M + s
         return ElGamal(c1, c2, generate(M.value))
+
+    def boneh_lynn_shacham_signature(self, message: str):
+        M = Element(hash_to_g2(message))
+        s = M * self.x
+        return BonehLynnShacham(s, M, self)

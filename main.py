@@ -7,6 +7,7 @@ from src.commitment import Commitment
 from src.diffie_hellman_tuples import proveDHTuple
 from src.range import Range
 from src.Registry import Registry
+from src.Registry.util import hex_encode
 
 
 def main():
@@ -27,6 +28,17 @@ def main():
     alice_elgamal_sig = alice.elgamal_encryption(msg)
     print("Alice ElGamal Signature:", alice_elgamal_sig)
     print("Valid Signature?", alice_elgamal_sig.prove(alice_elgamal_sig.c1 * alice.x), '\n')
+
+    msg1 = "The first message to be signed."
+    msg2 = "The second message to be signed."
+
+    alice_bls_sig1 = alice.boneh_lynn_shacham_signature(hex_encode(msg1))
+    alice_bls_sig2 = alice.boneh_lynn_shacham_signature(hex_encode(msg2))
+    print("Alice BLS Signature:", alice_bls_sig1)
+    print("Valid Signature?", alice_bls_sig1.prove(), '\n')
+    alice_bls_aggregate = alice_bls_sig1 + alice_bls_sig2
+    print("Alice BLS Aggregate Signature:", alice_bls_aggregate)
+    print("Valid Signature?", alice_bls_aggregate.prove(), '\n')
 
     alice_random = copy.deepcopy(alice)
     y = alice.rng()

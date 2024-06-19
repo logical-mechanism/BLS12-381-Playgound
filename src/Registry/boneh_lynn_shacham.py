@@ -2,8 +2,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from src.bls12_381 import pair
 from src.Registry.element import Element
-from src.sha3_256 import generate
 
 if TYPE_CHECKING:
     from src.Registry.registry import Registry
@@ -11,20 +11,19 @@ if TYPE_CHECKING:
 
 @dataclass
 class BonehLynnShacham:
-    m: str
-    z: str
-    r: Element
+    s: Element
+    m: Element
     registry: 'Registry'
 
     def __str__(self):
-        return f"BonehLynnShacham (m={self.m}, z={self.z}, r={self.r.value}, registry={self.registry})"
+        return f"BonehLynnShacham (s={self.s}, registry={self.registry})"
+
+    def __add__(self, other: 'BonehLynnShacham') -> 'BonehLynnShacham':
+        if self.registry != other.registry:
+            raise ValueError("Cannot aggregate signatures from different registries")
+        aggregated_s = self.s + other.s
+        aggregated_m = self.m + other.m
+        return BonehLynnShacham(aggregated_s, aggregated_m, self.registry)
 
     def prove(self) -> bool:
-        m = generate(self.m)
-        eb = generate(m + self.r.value)
-        e = int(eb, 16)
-        z = int(self.z, 16)
-        g_z = self.registry.g * z
-        u_e = self.registry.u * e
-        rhs = self.r + u_e
-        return g_z == rhs
+        return pair(self.s.value, self.registry.g.value) == pair(self.m.value, self.registry.u.value)

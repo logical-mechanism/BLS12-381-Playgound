@@ -155,7 +155,7 @@ def hash_to_g2(message: str):
     Returns:
         str: The compressed point as a hexadecimal string.
     """
-    return compress(hash_to_G2(bytes.fromhex(message), "BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_".encode("utf-8"), hash_function))
+    return compress(hash_to_G2(bytes.fromhex(message), "BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_".encode("utf-8"), hash_function()))
 
 
 # identity elements
