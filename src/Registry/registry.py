@@ -5,14 +5,8 @@ from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.schnorr import Schnorr
+from src.Registry.util import hexify
 from src.sha3_256 import fiat_shamir_heuristic, generate
-
-
-def hexify(n: int) -> str:
-    hex_n = hex(n)[2:]  # Remove the '0x' prefix
-    if len(hex_n) % 2 != 0:
-        hex_n = '0' + hex_n  # Prepend '0' if length is odd
-    return hex_n
 
 
 @dataclass

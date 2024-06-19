@@ -5,8 +5,8 @@ from py_ecc.bls.g2_primitives import (G1_to_pubkey, G2_to_signature,
 from py_ecc.fields import optimized_bls12_381_FQ as FQ
 from py_ecc.fields import optimized_bls12_381_FQ2 as FQ2
 from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
-from py_ecc.optimized_bls12_381 import (G1, G2, add, curve_order, multiply,
-                                        neg, pairing)
+from py_ecc.optimized_bls12_381 import (G1, G2, Z1, Z2, add, curve_order,
+                                        multiply, neg, pairing)
 
 field_order = curve_order
 
@@ -141,6 +141,10 @@ def pair(g2_element: str, g1_element: str, final_exponentiate: bool = True) -> F
     """
     return pairing(uncompress(g2_element), uncompress(g1_element), final_exponentiate)
 
+
+# identity elements
+g1_identity = compress(Z1)
+g2_identity = compress(Z2)
 
 # Example usage:
 if __name__ == "__main__":
