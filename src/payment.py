@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
 
@@ -11,25 +11,24 @@ from src.Registry.registry import Registry
 @dataclass
 class Payment:
     s: BonehLynnShacham
+    # x, y, f
     initial: tuple[int, int, int]
+    # x, y, f
     final: tuple[int, int, int]
     receiver: Registry
     f: int
     b: int
-    A: Element = field(init=False)
-    B: Element = field(init=False)
+    A: Element = Element(g1_identity)
+    B: Element = Element(g1_identity)
     P: Element = Element(g1_point(1))
     Q: Element = Element(g2_point(1))
-    QI: Element = field(init=False)
+    QI: Element = invert(Q.value)
 
     def __post_init__(self):
-        self.QI = invert(self.Q.value)
-        self.A = Element(g1_identity)
         for i in self.initial:
             p = Element(g1_point(i))
             self.A = self.A + p
 
-        self.B = Element(g1_identity)
         for f in self.final:
             p = Element(g1_point(f))
             self.B = self.B + p

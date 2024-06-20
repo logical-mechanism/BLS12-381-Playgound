@@ -16,7 +16,7 @@ class BonehLynnShacham:
     registry: 'Registry'
 
     def __str__(self):
-        return f"BonehLynnShacham (s={self.s}, registry={self.registry})"
+        return f"BonehLynnShacham(s={self.s}, registry={self.registry})"
 
     def __add__(self, other: 'BonehLynnShacham') -> 'BonehLynnShacham':
         if self.registry != other.registry:
