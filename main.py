@@ -13,6 +13,8 @@ from src.Registry.util import hex_encode
 def main():
     alice = Registry()
     print("Alice:", alice, '\n')
+    bob = Registry()
+    print("Bob:", bob, '\n')
 
     print("Alice Inverse Public Element:", ~alice.u)
 

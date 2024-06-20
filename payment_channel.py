@@ -1,59 +1,67 @@
-# import time
+import pprint
 
-from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
-
-from src.bls12_381 import (combine, g1_identity, g1_point, g2_point, invert,
-                           pair, scale)
+from src.payment import Payment
+from src.Registry.registry import Registry
 
 
 def two_party_exchange_with_fee():
-    # The initial amounts
-    x0 = 100
-    y0 = 25
-    f0 = 0
+
+    X = Registry()
+    xh = X.hash()
+    print(f"User X: {xh}")
+
+    Y = Registry()
+    yh = Y.hash()
+    print(f"User Y: {yh}")
+
+    # F always exists as the fee owner
+    F = Registry()
+    fh = F.hash()
+    print(f"Fee: {fh}")
+
+    # this is going to act like our onchain merkle tree
+    print("\nInitial State:")
+    values = {
+        xh: 100,
+        yh: 25,
+        fh: 0,
+    }
+    pprint.pp(values)
 
     # x wants to send b to y and pay f' to f
     b = 15
     fee = 1
 
-    x = x0 - fee - b
-    y = y0 + b
-    f = f0 + fee
+    # calculate the final states
+    x = values[xh] - fee - b
+    y = values[yh] + b
+    f = values[fh] + fee
 
-    P = g1_point(1)
-    Q = g2_point(1)
-    QI = invert(Q)
+    # the payment proof
+    payment = Payment(
+        X.boneh_lynn_shacham_signature(xh),
+        (values[xh], values[yh], values[fh]),
+        (x, y, f),
+        Y,
+        fee,
+        b,
+    )
 
-    positive = [
-        scale(P, x0),
-        scale(P, y0),
-        scale(P, f0),
-        # These should be able to be removed due to non-degeneracy
-        # scale(P, fee),
-        # scale(P, b),
-    ]
-    negative = [
-        scale(P, x),
-        scale(P, y),
-        scale(P, f),
-        # These should be able to be removed due to non-degeneracy
-        # scale(P, fee),
-        # scale(P, b),
-    ]
+    print("\nIs the payment valid?")
+    print(payment)
+    is_valid = payment.prove()
+    print(is_valid)
+    if is_valid is True:
+        del values[xh]
+        X.rerandomize()
+        xh = X.hash()
+        print(f"\nUser X Re-Randomized: {xh}")
+        values[xh] = x
+        values[yh] = y
+        values[fh] = f
 
-    # start_time = time.time()
-    A = g1_identity
-    for p in positive:
-        A = combine(A, p)
-
-    B = g1_identity
-    for n in negative:
-        B = combine(B, n)
-
-    print(pair(Q, A) * pair(QI, B) == FQ12.one())
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
-    # print(f"Elapsed time: {elapsed_time} seconds")
+        print("\nFinal State:")
+        pprint.pp(values)
 
 
 if __name__ == "__main__":
