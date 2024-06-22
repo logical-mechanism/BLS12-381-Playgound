@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
-
-from src.bls12_381 import g1_identity, g1_point, g2_point, invert, pair
+from src.bls12_381 import (g1_identity, g1_point, g2_point, gt_identity,
+                           invert, pair)
 from src.Registry.boneh_lynn_shacham import BonehLynnShacham
 from src.Registry.element import Element
 from src.Registry.registry import Registry
@@ -34,6 +33,6 @@ class Payment:
             self.B = self.B + p
 
     def prove(self) -> bool:
-        value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI, self.B.value) == FQ12.one()
+        value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI, self.B.value) == gt_identity
         spend_validation = self.s.prove()
         return all([value_conservation, spend_validation])

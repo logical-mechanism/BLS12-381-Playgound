@@ -1,4 +1,6 @@
 venv/
 src/__pycache__/
+tests/__pycache__/
 src/Registry/__pycache__/
 papers/
+.pytest_cache/

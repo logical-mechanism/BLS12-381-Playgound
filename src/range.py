@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import field_order, g1_point
+from src.bls12_381 import (field_order, g1_point, g2_point, gt_identity,
+                           invert, pair)
 from src.Registry.element import Element
 
 
@@ -14,6 +15,8 @@ class Range:
     D: Element = field(init=False)
     Y: Element = field(init=False)
     W: Element = field(init=False)
+    Q: Element = Element(g2_point(1))
+    QI: Element = invert(Q.value)
 
     def __post_init__(self):
         # set up A
@@ -41,5 +44,4 @@ class Range:
         return f"Range(A={self.A.value}, B={self.B.value}, D={self.D.value}, Y={self.Y.value}, W={self.W.value})"
 
     def prove(self) -> bool:
-        # Check the validity of the range proof by verifying the provided equations
-        return self.A == self.B + self.Y + self.W and self.A + self.B + self.W == 2 * self.D + self.Y
+        return pair(self.Q.value, (self.Y + 2 * self.D).value) * pair(self.QI, (self.A + self.B + self.W).value) == gt_identity

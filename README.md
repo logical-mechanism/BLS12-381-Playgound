@@ -14,3 +14,11 @@ source venv/bin/activate
 # Install required Python packages
 pip install -r requirements.txt
 ```
+
+# Test
+
+The playground usings `pytest` for testing.
+
+```bash
+pytest
+```

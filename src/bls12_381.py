@@ -11,8 +11,6 @@ from py_ecc.optimized_bls12_381 import (G1, G2, Z1, Z2, add, curve_order,
 
 from src.sha3_256 import hash_function
 
-field_order = curve_order
-
 
 def rng() -> int:
     """
@@ -23,7 +21,7 @@ def rng() -> int:
     """
     # Generate a random byte string of the specified length
     random_bits = secrets.randbits(255)
-    if random_bits < field_order:
+    if random_bits < curve_order:
         return random_bits
     else:
         return rng()
@@ -161,66 +159,7 @@ def hash_to_g2(message: str):
 # identity elements
 g1_identity = compress(Z1)
 g2_identity = compress(Z2)
+gt_identity = FQ12.one()
 
-# Example usage:
-if __name__ == "__main__":
-    scalar = 123456789  # Example scalar value
-    compressed_g1_point = g1_point(scalar)
-    print(f"Compressed BLS12-381 g1 point: {compressed_g1_point}")
-    uncompressed_g1_point = uncompress(compressed_g1_point)
-    print(f"Uncompressed BLS12-381 g1 point: {uncompressed_g1_point}", uncompressed_g1_point[2])
-
-    recompressed_g1_point = compress(uncompressed_g1_point)
-    print(recompressed_g1_point == compressed_g1_point)
-
-    g1 = g1_point(1)
-    print("Invert g1", invert(g1))
-    g_scaled = scale(g1, scalar)
-    print(compressed_g1_point == g_scaled)
-
-    compressed_g2_point = g2_point(scalar)
-    print(f"Compressed BLS12-381 g2 point: {compressed_g2_point}")
-    uncompressed_g2_point = uncompress(compressed_g2_point)
-    print(f"Uncompressed BLS12-381 g2 point: {uncompressed_g2_point}", uncompressed_g2_point[2])
-
-    recompressed_g2_point = compress(uncompressed_g2_point)
-    print(recompressed_g2_point == compressed_g2_point)
-
-    added_g1 = combine(g1, g1)
-    print("Add g1 to g1", added_g1)
-    print("g1 of 2", g1_point(2))
-    print(added_g1 == g1_point(2))
-
-    g2 = g2_point(1)
-    print("Invert g2", invert(g2))
-    added_g2 = combine(g2, g2)
-    print("G2 Point", g2, len(g2))
-    print(added_g2 == g2_point(2), '\n')
-
-    u1g1 = g1_point(1)
-    u2g1 = g1_point(2)
-    v1g2 = g2_point(1)
-    v2g2 = g2_point(2)
-    print("e(U1+U2,V1)=e(U1,V1) x e(U2,V1)")
-    pr = pair(v1g2, combine(u1g1, u2g1))
-    pl = pair(v1g2, u1g1) * pair(v1g2, u2g1)
-    print(pr == pl)
-
-    print("e(U1,V1+V2)=e(U1,V1) x e(U1,V2)")
-    pl = pair(combine(v1g2, v2g2), u1g1)
-    pr = pair(v1g2, u1g1) * pair(v2g2, u1g1)
-    print(pr == pl)
-
-    print("e(aU,bV)=e(U,V)^(a*b)")
-    a = 20
-    b = 10
-    au = scale(u1g1, a)
-    bv = scale(v1g2, b)
-    pl = pair(bv, au)
-    pr = pair(v1g2, u1g1) ** (a * b)
-    print(pr == pl)
-
-    print("e(G,H)^k=1")
-    print(pair(v1g2, u1g1) ** 0 == FQ12.one())
-    print("e(Q,P)^(x^2 - x - 42)=1")
-    print(pair(scale(v1g2, 7), scale(u1g1, 7)) * pair(invert(v1g2), scale(u1g1, 7)) * pair(invert(v1g2), scale(u1g1, 42)) == FQ12.one())
+# field order
+field_order = curve_order

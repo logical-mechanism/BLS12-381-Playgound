@@ -3,6 +3,12 @@ from hashlib import sha3_256
 
 
 def hash_function():
+    """
+    Assigns sha3_256 as a hash function for the hash to g2 function inside the bls12-381 module.
+
+    Returns:
+        function: The sha3_256 function
+    """
     return sha3_256
 
 
@@ -47,11 +53,3 @@ def fiat_shamir_heuristic(gb: str, grb: str, ub: str) -> str:
     hash_result = sha3_256(unhexed_bytes).digest().hex()
 
     return hash_result
-
-
-# Example usage:
-if __name__ == "__main__":
-    input_string = "Hello, world!"
-    hash_digest = generate(input_string)
-    print("SHA3-256 Hash:", hash_digest)
-    print(fiat_shamir_heuristic("", "", ""))
