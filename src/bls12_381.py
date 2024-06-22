@@ -161,6 +161,7 @@ def hash_to_g2(message: str):
 # identity elements
 g1_identity = compress(Z1)
 g2_identity = compress(Z2)
+gt_identity = FQ12.one()
 
 # Example usage:
 if __name__ == "__main__":
