@@ -1,7 +1,6 @@
 # main.py
 import copy
 
-from src.diffie_hellman_tuples import proveDHTuple
 from src.Registry import Registry
 from src.Registry.util import hex_encode
 
@@ -49,9 +48,6 @@ def main():
     alice_random_msg_sig = alice_random.fiat_shamir_signature(msg)
     print("Alice Re-Randomized Fiat Shamir Signature:", alice_random_msg_sig)
     print("Valid Signature?", alice_random_msg_sig.prove(), '\n')
-
-    outcome = proveDHTuple(y, alice, alice_random)
-    print("Re-Randomized Valid:", outcome)
 
 
 if __name__ == "__main__":
