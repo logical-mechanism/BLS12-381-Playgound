@@ -25,6 +25,11 @@ class Registry:
     def __str__(self):
         return f"Registry(g={self.g}, u={self.u})"
 
+    def __eq__(self, other):
+        if not isinstance(other, Registry):
+            return NotImplemented
+        return self.x == other.x and self.g == other.g and self.u == other.u
+
     def hash(self) -> str:
         return generate(self.g.value + self.u.value)
 
