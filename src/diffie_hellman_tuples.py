@@ -22,11 +22,9 @@ def proveDHTuple(scalar: int, left: Registry, right: Registry) -> bool:
     # Create a deep copy of the left registry object and rerandomize it with r
     left_copy = copy.deepcopy(left)
     left_copy.rerandomize(r)
-    right_copy = copy.deepcopy(right)
-    right_copy.rerandomize(r)
 
     # Generate a challenge c based on the concatenation of the values in the left_copy registry
-    cb = generate(left_copy.g.value + right_copy.g.value)
+    cb = generate(left_copy.g.value + left_copy.u.value)
     c = int(cb, 16)
 
     # Calculate z as r + c * scalar
