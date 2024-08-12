@@ -50,3 +50,49 @@ def test_negate_negative_value():
     answer = Value({"": {"": 1}})
     result.negate()
     assert result == answer
+
+
+def test_add_values_equal_to_zero():
+    result = Value({"": {"": -1}}) + Value({"": {"": 1}})
+    answer = Value({})
+    assert result == answer
+
+
+def test_sub_values_equal_to_zero():
+    result = Value({"": {"": 1}}) - Value({"": {"": 1}})
+    answer = Value({})
+    assert result == answer
+
+
+def test_add_zero_to_zero():
+    result = Value({}) + Value({})
+    answer = Value({})
+    assert result == answer
+
+
+def test_sub_zero_to_zero():
+    result = Value({}) - Value({})
+    answer = Value({})
+    assert result == answer
+
+
+def test_sub_value_from_zero():
+    result = Value({}) - Value({"": {"": 1}})
+    answer = Value({"": {"": -1}})
+    assert result == answer
+
+
+def test_mul_by_zero():
+    result_r = 0 * Value({"": {"": 1}})
+    result_l = Value({"": {"": 1}}) * 0
+    answer = Value({})
+    assert result_r == answer
+    assert result_l == answer
+
+
+def test_mul_by_one():
+    result_r = 1 * Value({"": {"": 1}})
+    result_l = Value({"": {"": 1}}) * 1
+    answer = Value({"": {"": 1}})
+    assert result_r == answer
+    assert result_l == answer

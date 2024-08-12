@@ -51,7 +51,7 @@ class Value:
         if not isinstance(scale, int):
             return NotImplemented
         if scale == 0:
-            Value({})
+            return Value({})
         new_inner = {}
         for policy, assets in self.inner.items():
             new_assets = {asset: quantity * scale for asset, quantity in assets.items()}
