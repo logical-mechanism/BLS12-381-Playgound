@@ -9,17 +9,16 @@ from src.Registry.registry import Registry
 
 @dataclass
 class Payment:
-    s: BonehLynnShacham
+    sig: BonehLynnShacham
+    receiver: Registry
     # x, y, f
     initial: tuple[int, int, int]
     # x, y, f
     final: tuple[int, int, int]
-    receiver: Registry
-    f: int
-    b: int
+    # identity elements for summing
     A: Element = Element(g1_identity)
     B: Element = Element(g1_identity)
-    P: Element = Element(g1_point(1))
+    # generator elements
     Q: Element = Element(g2_point(1))
     QI: Element = invert(Q.value)
 
@@ -32,7 +31,10 @@ class Payment:
             p = Element(g1_point(f))
             self.B = self.B + p
 
+    def __str__(self):
+        return f"Payment(sig={self.sig}, receiver={self.receiver}, final={self.final})"
+
     def prove(self) -> bool:
         value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI, self.B.value) == gt_identity
-        spend_validation = self.s.prove()
+        spend_validation = self.sig.prove()
         return all([value_conservation, spend_validation])

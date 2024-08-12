@@ -28,7 +28,7 @@ def two_party_exchange_with_fee():
     }
     pprint.pp(values)
 
-    # x wants to send b to y and pay f' to f
+    # x wants to send b to y and pay fee to f
     b = 15
     fee = 1
 
@@ -39,12 +39,14 @@ def two_party_exchange_with_fee():
 
     # the payment proof
     payment = Payment(
+        # sign the value
         X.boneh_lynn_shacham_signature(xh),
-        (values[xh], values[yh], values[fh]),
-        (x, y, f),
+        # receiver
         Y,
-        fee,
-        b,
+        # initial values
+        (values[xh], values[yh], values[fh]),
+        # final values
+        (x, y, f),
     )
 
     print("\nIs the payment valid?")
