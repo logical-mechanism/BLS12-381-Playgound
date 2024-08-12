@@ -70,6 +70,14 @@ def test_add_zero_to_zero():
     assert result == answer
 
 
+def test_add_value_to_value():
+    v1 = Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}})
+    v2 = Value({"": {"": 1}, "cafe": {"fade": 1}})
+    answer = Value({"": {"": 2}, "acab": {"beef": 1, "face": 1}, "cafe": {"fade": 1}})
+    assert v1 + v2 == v2 + v1
+    assert v1 + v2 == answer
+
+
 def test_sub_zero_to_zero():
     result = Value({}) - Value({})
     answer = Value({})
