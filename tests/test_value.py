@@ -90,12 +90,22 @@ def test_sub_value_from_zero():
     assert result == answer
 
 
+def test_sub_value_to_value():
+    v1 = Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}})
+    v2 = Value({"": {"": 1}, "cafe": {"fade": 1}})
+    answer = Value({"acab": {"beef": 1, "face": 1}, "cafe": {"fade": -1}})
+    assert v1 - v2 != v2 - v1
+    assert v1 - v2 == answer
+
+
 def test_mul_by_zero():
-    result_r = 0 * Value({"": {"": 1}})
-    result_l = Value({"": {"": 1}}) * 0
+    v1 = Value({"": {"": 1}})
+    result_r = 0 * v1
+    result_l = v1 * 0
     answer = Value({})
     assert result_r == answer
     assert result_l == answer
+    assert v1 == v1
 
 
 def test_mul_by_one():
@@ -104,3 +114,13 @@ def test_mul_by_one():
     answer = Value({"": {"": 1}})
     assert result_r == answer
     assert result_l == answer
+
+
+def test_quantity_of_something():
+    v1 = Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}})
+    assert v1.quantity_of("acab", "beef") == 1
+
+
+def test_quantity_of_nothing():
+    v1 = Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}})
+    assert v1.quantity_of("cafe", "fade") == 0

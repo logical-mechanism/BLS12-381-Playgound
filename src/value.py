@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from copy import deepcopy
 
 
 @dataclass
@@ -17,35 +18,42 @@ class Value:
     def __add__(self, other):
         if not isinstance(other, Value):
             return NotImplemented
+
+        # Use deepcopy to avoid modifying the original instance
+        result = deepcopy(self.inner)
+
         for policy, assets in other.inner.items():
-            if policy in self.inner:
+            if policy in result:
                 for asset, quantity in assets.items():
-                    if asset in self.inner[policy]:
-                        self.inner[policy][asset] += quantity
-                    else:
-                        self.inner[policy][asset] = quantity
+                    result[policy][asset] = result[policy].get(asset, 0) + quantity
             else:
-                self.inner[policy] = assets
-        self._remove_zero_entries()
-        return Value(self.inner)
+                result[policy] = deepcopy(assets)
+
+        output = Value(result)
+        output._remove_zero_entries()
+
+        return output
 
     def __sub__(self, other):
         if not isinstance(other, Value):
             return NotImplemented
-        for policy, assets in other.inner.items():
-            if policy in self.inner:
-                for asset, quantity in assets.items():
-                    if asset in self.inner[policy]:
-                        self.inner[policy][asset] -= quantity
-                    else:
-                        self.inner[policy][asset] = -quantity
-            else:
-                self.inner[policy] = {}
-                for asset, quantity in assets.items():
-                    self.inner[policy][asset] = -quantity
 
-        self._remove_zero_entries()
-        return Value(self.inner)
+        # Use deepcopy to avoid modifying the original instance
+        result = deepcopy(self.inner)
+
+        for policy, assets in other.inner.items():
+            if policy in result:
+                for asset, quantity in assets.items():
+                    result[policy][asset] = result[policy].get(asset, 0) - quantity
+            else:
+                # we are subtracting from zero so it would be negative
+                result[policy] = {asset: -quantity for asset, quantity in assets.items()}
+
+        # Create the result Value object and remove zero entries
+        output = Value(result)
+        output._remove_zero_entries()
+
+        return output
 
     def __mul__(self, scale):
         if not isinstance(scale, int):
@@ -60,6 +68,19 @@ class Value:
 
     def __rmul__(self, other):
         return self.__mul__(other)
+
+    def quantity_of(self, policy, asset):
+        """
+        Get the quantity of a policy id and asset name from self.
+        """
+        if not isinstance(policy, str):
+            return NotImplemented
+        if not isinstance(asset, str):
+            return NotImplemented
+        try:
+            return self.inner[policy][asset]
+        except KeyError:
+            return 0
 
     def negate(self):
         """
