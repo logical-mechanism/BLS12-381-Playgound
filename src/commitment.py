@@ -9,6 +9,7 @@ from src.sha3_256 import generate
 class Commitment:
     v: int
     r: int | None = None
+
     c: Element = field(init=False)
 
     def __post_init__(self):
@@ -29,17 +30,12 @@ class Commitment:
     def __add__(self, other):
         if not isinstance(other, Commitment):
             return NotImplemented
-        # Combine the c elements
-        combined_c = self.c + other.c
         # Add the r values
         combined_r = self.r + other.r
         # Add the v values
         combined_v = self.v + other.v
         # Create a new Commitment instance with combined values
-        new_commitment = Commitment(combined_v)
-        new_commitment.r = combined_r
-        new_commitment.c = combined_c
-        return new_commitment
+        return Commitment(combined_v, combined_r)
 
     def __eq__(self, other):
         if not isinstance(other, Commitment):

@@ -29,5 +29,57 @@ def test_combine_commitments():
     assert ct.r == c0.r + c1.r
 
 
+def test_identity_commitment():
+    v = 123456789
+    r = 987654321
+    c = Commitment(v=v, r=r)
+    identity_commitment = Commitment(v=0, r=0)
+    combined_commitment = c + identity_commitment
+    assert combined_commitment.v == c.v
+    assert combined_commitment.r == c.r
+    assert combined_commitment.c.value == c.c.value
+
+
+def test_commitment_addition_commutativity():
+    v0 = 123456789
+    v1 = 987654321
+    c0 = Commitment(v=v0)
+    c1 = Commitment(v=v1)
+    assert (c0 + c1).c.value == (c1 + c0).c.value
+
+
+def test_commitment_addition_associativity():
+    v0 = 111111111
+    v1 = 222222222
+    v2 = 333333333
+    c0 = Commitment(v=v0)
+    c1 = Commitment(v=v1)
+    c2 = Commitment(v=v2)
+    assert ((c0 + c1) + c2).c.value == (c0 + (c1 + c2)).c.value
+
+
+def test_commitment_homomorphism():
+    v = 123456789
+    c = Commitment(v=v)
+    double_commitment = c + c
+    scaled_commitment = Commitment(v=2 * v, r=2 * c.r)
+    assert double_commitment.c.value == scaled_commitment.c.value
+
+
+def test_different_randomness():
+    v = 123456789
+    c0 = Commitment(v=v, r=44203)
+    c1 = Commitment(v=v, r=12345)
+    assert c0.c.value != c1.c.value
+
+
+def test_commitment_equality():
+    v = 123456789
+    r = 44203
+    c0 = Commitment(v=v, r=r)
+    c1 = Commitment(v=v, r=r)
+    assert c0 == c1
+
+
 if __name__ == "__main__":
     pytest.main()
