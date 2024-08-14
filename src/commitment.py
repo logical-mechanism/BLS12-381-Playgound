@@ -53,6 +53,16 @@ class Commitment:
         # Create a new Commitment instance with combined values
         return Commitment(combined_v, combined_r)
 
+    def __sub__(self, other):
+        if not isinstance(other, Commitment):
+            return NotImplemented
+        # Add the r values
+        combined_r = self.r - other.r
+        # Add the v values
+        combined_v = self.v - other.v
+        # Create a new Commitment instance with combined values
+        return Commitment(combined_v, combined_r)
+
     def __eq__(self, other):
         if not isinstance(other, Commitment):
             return NotImplemented

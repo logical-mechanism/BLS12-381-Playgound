@@ -10,7 +10,7 @@ class Range:
     """
     Range is a cryptographic class for generating and verifying range proofs
     using BLS12-381 elliptic curve operations. If the lower and upper bounds
-    are not provided they are assume to be 1 and the field prime. The proof
+    are not provided they are assume to be 0 and the field prime. The proof
     solves a + b + w = y + 2d, assuming a - d = y and d - b = w, such that the
     equality a > d > b holds.
 
@@ -31,7 +31,7 @@ class Range:
     Y_commit: Commitment = field(init=False)
     W_commit: Commitment = field(init=False)
     K_commit: Commitment = field(init=False)
-    right: Commitment = field(init=False)
+    right: Element = field(init=False)
     left: Commitment = field(init=False)
     Q: Element = field(init=False)
     QI: Element = field(init=False)
@@ -46,9 +46,9 @@ class Range:
 
         # if the lower bound is not set it becomes one
         if self.lower_bound is None:
-            self.lower_bound = 1
+            self.lower_bound = 0
         # lower bound cant be smaller then the identiy
-        if self.lower_bound < 1:
+        if self.lower_bound < 0:
             raise ValueError("Invalid range proof: Lower bound must be greater than zero.")
 
         # Set up D commitment
@@ -56,13 +56,13 @@ class Range:
 
         # Set up Y commitment
         y = self.upper_bound - self.secret_value
-        if y <= 0:
+        if y < 0:
             raise ValueError("Invalid range proof: Y value must be greater than zero.")
         self.Y_commit = Commitment(y)
 
         # Set up W commitment
         w = self.secret_value - self.lower_bound
-        if w <= 0:
+        if w < 0:
             raise ValueError("Invalid range proof: W value must be greater than zero.")
         self.W_commit = Commitment(w)
 
@@ -78,13 +78,12 @@ class Range:
         self.QI = invert(self.Q.value)
 
         # need to account for the random r values
-        self.right = Commitment(0, self.W_commit.r)
+        self.right = self.K_commit.c + Commitment(0, self.W_commit.r).c
         self.left = Commitment(0, self.K_commit.r)
 
     def __str__(self):
-        return f"Range(\nK={self.K_commit.c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
+        return f"Range(\nR={self.right},\nW={self.W_commit.c},\nL={self.left.c}\n)"
 
     def prove(self) -> bool:
         # Verifying that the commitments are consistent with the expected range proof
-        check_r = pair(self.Q.value, (self.K_commit.c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
-        return check_r
+        return pair(self.Q.value, self.right.value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity

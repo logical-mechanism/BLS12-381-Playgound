@@ -12,6 +12,14 @@ def test_valid_range():
     assert r.prove()
 
 
+def test_64_bit_range():
+    lower = 0
+    upper = pow(2, 64)
+    d = randrange(lower, upper)
+    r = Range(secret_value=d, lower_bound=lower, upper_bound=upper)
+    assert r.prove()
+
+
 def test_age_verification_model_too_low():
     lower = 18
     upper = 25
@@ -46,13 +54,24 @@ def test_age_verification_model2():
 
 
 def test_lower_range_value():
-    with pytest.raises(ValueError, match="Invalid range proof: W value must be greater than zero."):
-        Range(1)
+    lower = 0
+    upper = 125  # oldest ever is 122
+    age = 0
+    r = Range(secret_value=age, lower_bound=lower, upper_bound=upper)
+    assert r.prove()
+
+
+def test_null_range_value():
+    lower = 0
+    upper = 0  # oldest ever is 122
+    age = 0
+    r = Range(secret_value=age, lower_bound=lower, upper_bound=upper)
+    assert r.prove()
 
 
 def test_upper_range_value():
     with pytest.raises(ValueError, match="Invalid range proof: Y value must be greater than zero."):
-        Range(field_order - 1)
+        Range(field_order)
 
 
 if __name__ == "__main__":
