@@ -11,9 +11,10 @@ class Range:
     Range is a cryptographic class for generating and verifying range proofs
     using BLS12-381 elliptic curve operations. If the lower and upper bounds
     are not provided they are assume to be 1 and the field prime. The proof
-    solves a + b + w = y + 2d, assuming a - d = y and d - b = w, a > d > b.
+    solves a + b + w = y + 2d, assuming a - d = y and d - b = w, such that the
+    equality a > d > b holds.
 
-    It is assumed that the lower and upper bound are public.
+    It is assumed that the lower and upper bound values are public.
 
     Attributes:
         secret_value (int): The value to be proven within the range.
@@ -36,12 +37,14 @@ class Range:
     QI: Element = field(init=False)
 
     def __post_init__(self):
+        # if upper bound is not set then it becomes field prime minus one
         if self.upper_bound is None:
             self.upper_bound = field_order - 1
         # upper bound cant be larger than the field prime
         if self.upper_bound > field_order - 1:
             raise ValueError("Invalid range proof: Upper bound must be less than field order.")
 
+        # if the lower bound is not set it becomes one
         if self.lower_bound is None:
             self.lower_bound = 1
         # lower bound cant be smaller then the identiy
