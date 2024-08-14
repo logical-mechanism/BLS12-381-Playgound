@@ -28,12 +28,20 @@ def test_age_verification_model_too_high():
         Range(secret_value=age, lower_bound=lower, upper_bound=upper)
 
 
-def test_age_verification_model():
+def test_age_verification_model1():
     lower = 18
     upper = 25
     age = 21
     r = Range(secret_value=age, lower_bound=lower, upper_bound=upper)
     print(r)
+    assert r.prove()
+
+
+def test_age_verification_model2():
+    lower = 20
+    upper = 125  # oldest ever is 122
+    age = 21
+    r = Range(secret_value=age, lower_bound=lower, upper_bound=upper)
     assert r.prove()
 
 

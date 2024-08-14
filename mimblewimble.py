@@ -5,10 +5,10 @@ from src.range import Range
 def no_fee_no_leak():
     # the input_commitments
     input_commitments = [Commitment(123), Commitment(321)]
-    input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
+    input_range_proofs = [Range(i.v, 1, 1234) for i in input_commitments]
     # the output_commitments
     output_commitments = [Commitment(222), Commitment(222)]
-    output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
+    output_range_proofs = [Range(i.v, 1, 1234) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
     output_total = sum([o.r for o in output_commitments])
@@ -27,10 +27,10 @@ def no_leak():
     fee = 1
     # the input_commitments
     input_commitments = [Commitment(123), Commitment(321)]
-    input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
+    input_range_proofs = [Range(i.v, 1, 1234) for i in input_commitments]
     # the output_commitments
     output_commitments = [Commitment(222), Commitment(222 - fee)]
-    output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
+    output_range_proofs = [Range(i.v, 1, 1234) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
     output_total = sum([o.r for o in output_commitments])
@@ -50,10 +50,10 @@ def fee_and_leak():
     leak = 1
     # the input_commitments
     input_commitments = [Commitment(123), Commitment(321)]
-    input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
+    input_range_proofs = [Range(i.v, 1, 1234) for i in input_commitments]
     # the output_commitments
     output_commitments = [Commitment(222 - leak), Commitment(222 - fee)]
-    output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
+    output_range_proofs = [Range(i.v, 1, 1234) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
     output_total = sum([o.r for o in output_commitments])
@@ -73,10 +73,10 @@ def bad_proof():
     leak = 1
     # the input_commitments
     input_commitments = [Commitment(1233), Commitment(321)]
-    input_range_proofs = [Range(i.v, 1234, 1) for i in input_commitments]
+    input_range_proofs = [Range(i.v, 1, 1234) for i in input_commitments]
     # the output_commitments
     output_commitments = [Commitment(222 - leak), Commitment(222 - fee)]
-    output_range_proofs = [Range(i.v, 1234, 1) for i in output_commitments]
+    output_range_proofs = [Range(i.v, 1, 1234) for i in output_commitments]
     # the left r sum of the ouputs
     input_total = sum([i.r for i in input_commitments])
     output_total = sum([o.r for o in output_commitments])

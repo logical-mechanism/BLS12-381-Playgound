@@ -25,7 +25,7 @@ class Commitment:
         return generate(self.c.value)
 
     def __str__(self):
-        return f"Commitment(c={self.c.value}, r={self.r}, v={self.v})"
+        return f"Commitment(c={self.c}, r={self.r}, v={self.v})"
 
     def __add__(self, other):
         if not isinstance(other, Commitment):

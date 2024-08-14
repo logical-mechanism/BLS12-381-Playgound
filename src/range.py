@@ -66,22 +66,20 @@ class Range:
         # Set up K commitment (Y + 2D)
         self.K_commit = self.Y_commit + self.D_commit + self.D_commit
 
-        # Set up A and B commitments with derived randomness
-        self.A_commit = Commitment(self.upper_bound)
-        self.B_commit = Commitment(self.lower_bound)
+        # Set up A and B commitments with public randomness
+        self.A_commit = Commitment(self.upper_bound, 0)
+        self.B_commit = Commitment(self.lower_bound, 0)
 
         # Set up Q and Q Inverse
         self.Q = Element(g2_point(1))
         self.QI = invert(self.Q.value)
 
         # need to account for the random r values
-        right_r = self.A_commit.r + self.B_commit.r + self.W_commit.r
-        self.right = Commitment(0, right_r)
-        left_r = self.K_commit.r
-        self.left = Commitment(0, left_r)
+        self.right = Commitment(0, self.W_commit.r)
+        self.left = Commitment(0, self.K_commit.r)
 
     def __str__(self):
-        return f"RangeProof(\nK={self.K_commit.c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
+        return f"Range(\nK={self.K_commit.c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
 
     def prove(self) -> bool:
         # Verifying that the commitments are consistent with the expected range proof
