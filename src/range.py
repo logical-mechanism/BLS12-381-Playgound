@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import field_order, g2_point, gt_identity, invert, pair
+from src.bls12_381 import field_order, g2_point, gt_identity, invert, pair, rng
 from src.commitment import Commitment
 from src.Registry.element import Element
+from src.Registry.util import hexify
+from src.sha3_256 import generate
 
 
 @dataclass
@@ -31,7 +33,7 @@ class Range:
     Y_commit: Commitment = field(init=False)
     W_commit: Commitment = field(init=False)
     K_commit: Commitment = field(init=False)
-    right: Element = field(init=False)
+    right: Commitment = field(init=False)
     left: Commitment = field(init=False)
     Q: Element = field(init=False)
     QI: Element = field(init=False)
@@ -70,20 +72,68 @@ class Range:
         self.K_commit = self.Y_commit + self.D_commit + self.D_commit
 
         # Set up A and B commitments with public randomness
-        self.A_commit = Commitment(self.upper_bound, 0)
-        self.B_commit = Commitment(self.lower_bound, 0)
+        self.A_commit = Commitment(self.upper_bound)
+        self.B_commit = Commitment(self.lower_bound)
 
         # Set up Q and Q Inverse
         self.Q = Element(g2_point(1))
         self.QI = invert(self.Q.value)
 
         # need to account for the random r values
-        self.right = self.K_commit.c + Commitment(0, self.W_commit.r).c
+        self.right = Commitment(0, self.A_commit.r + self.B_commit.r + self.W_commit.r)
         self.left = Commitment(0, self.K_commit.r)
 
     def __str__(self):
-        return f"Range(\nR={self.right},\nW={self.W_commit.c},\nL={self.left.c}\n)"
+        return f"Range(\nK={self.K_commit.c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
 
-    def prove(self) -> bool:
+    def schnorr(self, z_a, a_c, flag):
+        if flag is True:
+            r_commitment = self.A_commit - Commitment(self.upper_bound, 0)
+        else:
+            r_commitment = self.B_commit - Commitment(self.lower_bound, 0)
+        beta = generate(a_c + r_commitment.c.value)
+        b = int(beta, 16)
+        z_commitment = Commitment(0, z_a)
+        right = Element(a_c) + (b * r_commitment.c)
+        return z_commitment.c.value == right.value
+
+    def prove(self, z_a, a_c, z_b, b_c) -> bool:
+        # prove they know the r in A_commit
+        check_a = self.schnorr(z_a, a_c, True)
+        # prove they know the r in B_commit
+        check_b = self.schnorr(z_b, b_c, False)
+        # prove the pairing range proof
+        check_p = pair(self.Q.value, (self.K_commit.c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
         # Verifying that the commitments are consistent with the expected range proof
-        return pair(self.Q.value, self.right.value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
+        return check_p and check_a and check_b
+
+    def generate(self):
+        # do the schnorr proofs
+        r_upper_commitment = self.A_commit - Commitment(self.upper_bound, 0)
+        r_lower_commitment = self.B_commit - Commitment(self.lower_bound, 0)
+
+        alpha = rng()
+        alpha_upper_commitment = Commitment(0, alpha)
+
+        beta = generate(alpha_upper_commitment.c.value + r_upper_commitment.c.value)
+        b = int(beta, 16)
+        z_a = alpha + b * self.A_commit.r
+        a_c = alpha_upper_commitment.c.value
+
+        alpha = rng()
+        alpha_lower_commitment = Commitment(0, alpha)
+        beta = generate(alpha_lower_commitment.c.value + r_lower_commitment.c.value)
+        b = int(beta, 16)
+        z_b = alpha + b * self.B_commit.r
+        b_c = alpha_lower_commitment.c.value
+
+        return f"""Range(
+            \nK={self.K_commit.c},
+            \nR={self.right.c},
+            \nW={self.W_commit.c},
+            \nL={self.left.c},
+            \nZa={hexify(z_a)},
+            \nac={a_c},
+            \nZb={hexify(z_b)},
+            \nbc={b_c},
+        \n)"""

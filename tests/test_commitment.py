@@ -81,5 +81,19 @@ def test_commitment_equality():
     assert c0 == c1
 
 
+def test_subtract_from_commit():
+    w = Commitment(2)
+    r = Commitment(0, w.r)
+    answer = Commitment(2, 0)
+    assert w - r == answer
+
+
+def test_knowledge_of_r():
+    v = 123456789
+    r = 44203
+    c0 = Commitment(v=v, r=r)
+    assert c0.prove_knowledge_of_r(v)
+
+
 if __name__ == "__main__":
     pytest.main()

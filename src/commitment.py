@@ -67,3 +67,17 @@ class Commitment:
         if not isinstance(other, Commitment):
             return NotImplemented
         return self.c == other.c and self.r == other.r and self.v == other.v
+
+    def prove_knowledge_of_r(self, value: int):
+        v_commitment = Commitment(value, 0)
+        r_commitment = self - v_commitment
+        alpha = rng()
+        alpha_commitment = Commitment(0, alpha)
+        beta = generate(alpha_commitment.c.value + r_commitment.c.value)
+        b = int(beta, 16)
+        z = alpha + b * self.r
+        z_commitment = Commitment(0, z)
+        right = alpha_commitment.c + (b * r_commitment.c)
+        print(z)
+        print(alpha_commitment.c.value)
+        return z_commitment.c.value == right.value
