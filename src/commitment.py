@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import g1_point, rng
+from src.bls12_381 import field_order, g1_point, rng
 from src.Registry.element import Element
 from src.sha3_256 import generate
 
@@ -47,9 +47,9 @@ class Commitment:
         if not isinstance(other, Commitment):
             return NotImplemented
         # Add the r values
-        combined_r = self.r + other.r
+        combined_r = (self.r + other.r) % field_order
         # Add the v values
-        combined_v = self.v + other.v
+        combined_v = (self.v + other.v) % field_order
         # Create a new Commitment instance with combined values
         return Commitment(combined_v, combined_r)
 
@@ -57,9 +57,9 @@ class Commitment:
         if not isinstance(other, Commitment):
             return NotImplemented
         # Add the r values
-        combined_r = self.r - other.r
+        combined_r = (self.r - other.r) % field_order
         # Add the v values
-        combined_v = self.v - other.v
+        combined_v = (self.v - other.v) % field_order
         # Create a new Commitment instance with combined values
         return Commitment(combined_v, combined_r)
 
@@ -75,7 +75,7 @@ class Commitment:
         alpha_commitment = Commitment(0, alpha)
         beta = generate(alpha_commitment.c.value + r_commitment.c.value)
         b = int(beta, 16)
-        z = alpha + b * self.r
+        z = (alpha + b * self.r) % field_order
         z_commitment = Commitment(0, z)
         right = alpha_commitment.c + (b * r_commitment.c)
         print(z)

@@ -1,6 +1,6 @@
 import pytest
 
-from src.bls12_381 import g1_identity, g1_point, scale
+from src.bls12_381 import field_order, g1_identity, g1_point, scale
 from src.commitment import Commitment
 
 
@@ -26,7 +26,7 @@ def test_combine_commitments():
     c1 = Commitment(v=v1)
     ct = c0 + c1
     assert ct.v == v0 + v1
-    assert ct.r == c0.r + c1.r
+    assert ct.r == (c0.r + c1.r) % field_order
 
 
 def test_identity_commitment():

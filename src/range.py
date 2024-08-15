@@ -107,7 +107,7 @@ class Range:
         # Verifying that the commitments are consistent with the expected range proof
         return check_p and check_a and check_b
 
-    def generate(self):
+    def generate_proof(self):
         # do the schnorr proofs
         r_upper_commitment = self.A_commit - Commitment(self.upper_bound, 0)
         r_lower_commitment = self.B_commit - Commitment(self.lower_bound, 0)
@@ -117,23 +117,55 @@ class Range:
 
         beta = generate(alpha_upper_commitment.c.value + r_upper_commitment.c.value)
         b = int(beta, 16)
-        z_a = alpha + b * self.A_commit.r
+        z_a = (alpha + b * self.A_commit.r) % field_order
         a_c = alpha_upper_commitment.c.value
 
         alpha = rng()
         alpha_lower_commitment = Commitment(0, alpha)
         beta = generate(alpha_lower_commitment.c.value + r_lower_commitment.c.value)
         b = int(beta, 16)
-        z_b = alpha + b * self.B_commit.r
+        z_b = (alpha + b * self.B_commit.r) % field_order
         b_c = alpha_lower_commitment.c.value
 
-        return f"""Range(
-            \nK={self.K_commit.c},
-            \nR={self.right.c},
-            \nW={self.W_commit.c},
-            \nL={self.left.c},
-            \nZa={hexify(z_a)},
-            \nac={a_c},
-            \nZb={hexify(z_b)},
-            \nbc={b_c},
-        \n)"""
+        data = {
+            "K": self.K_commit.c.value,
+            "R": self.right.c.value,
+            "W": self.W_commit.c.value,
+            "L": self.left.c.value,
+            "A": self.A_commit.c.value,
+            "B": self.B_commit.c.value,
+            "Za": hexify(z_a),
+            "ac": a_c,
+            "Zb": hexify(z_b),
+            "bc": b_c,
+        }
+        return data
+
+    @staticmethod
+    def verify_proof(proof, lower_bound, upper_bound):
+        #
+        # Verify A
+        #
+        r_upper_commitment = Element(proof["A"]) + Element(invert(Commitment(upper_bound, 0).c.value))
+        beta = generate(proof['ac'] + r_upper_commitment.value)
+        b = int(beta, 16)
+        z_commitment = Commitment(0, int(proof['Za'], 16))
+        right = Element(proof['ac']) + (b * r_upper_commitment)
+        check_a = z_commitment.c.value == right.value
+        #
+        # Verify B
+        #
+        r_lower_commitment = Element(proof["B"]) + Element(invert(Commitment(lower_bound, 0).c.value))
+        beta = generate(proof['bc'] + r_lower_commitment.value)
+        b = int(beta, 16)
+        z_commitment = Commitment(0, int(proof['Zb'], 16))
+        right = Element(proof['bc']) + (b * r_lower_commitment)
+        check_b = z_commitment.c.value == right.value
+        #
+        # Verify Pairing
+        #
+        Q = Element(g2_point(1))
+        QI = invert(Q.value)
+        check_p = pair(Q.value, (Element(proof['K']) + Element(proof['R'])).value) * pair(QI, (Element(proof["A"]) + Element(proof["B"]) + Element(proof["W"]) + Element(proof["L"])).value) == gt_identity
+        # Verifying that the commitments are consistent with the expected range proof
+        return check_a and check_b and check_p
