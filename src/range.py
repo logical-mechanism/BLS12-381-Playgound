@@ -68,9 +68,6 @@ class Range:
             raise ValueError("Invalid range proof: W value must be greater than zero.")
         self.W_commit = Commitment(w)
 
-        # Set up K commitment (Y + 2D)
-        self.K_commit = self.Y_commit + self.D_commit + self.D_commit
-
         # Set up A and B commitments with public randomness
         self.A_commit = Commitment(self.upper_bound)
         self.B_commit = Commitment(self.lower_bound)
@@ -81,10 +78,10 @@ class Range:
 
         # need to account for the random r values
         self.right = Commitment(0, self.A_commit.r + self.B_commit.r + self.W_commit.r)
-        self.left = Commitment(0, self.K_commit.r)
+        self.left = Commitment(0, self.Y_commit.r + self.D_commit.r + self.D_commit.r)
 
     def __str__(self):
-        return f"Range(\nK={self.K_commit.c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
+        return f"Range(\nY={self.Y_commit.c},\n{(self.D_commit + self.D_commit).c},\nR={self.right.c},\nW={self.W_commit.c},\nL={self.left.c}\n)"
 
     def schnorr(self, z_a, a_c, flag):
         if flag is True:
@@ -103,7 +100,7 @@ class Range:
         # prove they know the r in B_commit
         check_b = self.schnorr(z_b, b_c, False)
         # prove the pairing range proof
-        check_p = pair(self.Q.value, (self.K_commit.c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
+        check_p = pair(self.Q.value, ((self.Y_commit + self.D_commit + self.D_commit).c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
         # Verifying that the commitments are consistent with the expected range proof
         return check_p and check_a and check_b
 
@@ -128,7 +125,8 @@ class Range:
         b_c = alpha_lower_commitment.c.value
 
         data = {
-            "K": self.K_commit.c.value,
+            "Y": self.Y_commit.c.value,
+            "D": (self.D_commit + self.D_commit).c.value,
             "R": self.right.c.value,
             "W": self.W_commit.c.value,
             "L": self.left.c.value,
@@ -166,6 +164,6 @@ class Range:
         #
         Q = Element(g2_point(1))
         QI = invert(Q.value)
-        check_p = pair(Q.value, (Element(proof['K']) + Element(proof['R'])).value) * pair(QI, (Element(proof["A"]) + Element(proof["B"]) + Element(proof["W"]) + Element(proof["L"])).value) == gt_identity
+        check_p = pair(Q.value, (Element(proof['Y']) + Element(proof['D']) + Element(proof['R'])).value) * pair(QI, (Element(proof["A"]) + Element(proof["B"]) + Element(proof["W"]) + Element(proof["L"])).value) == gt_identity
         # Verifying that the commitments are consistent with the expected range proof
         return check_a and check_b and check_p

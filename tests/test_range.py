@@ -224,7 +224,7 @@ def test_proof_generation1():
     combined_string = ''.join(f"{key}:{value} " for key, value in proof.items()).strip()
     print(f"Approximately: {len(combined_string) // 2} Bytes")
     assert Range.verify_proof(proof, lower, upper)
-    assert len(combined_string) // 2 == 464
+    assert len(combined_string) // 2 == 514
 
 
 def test_proof_generation2():
@@ -237,7 +237,7 @@ def test_proof_generation2():
     combined_string = ''.join(f"{key}:{value} " for key, value in proof.items()).strip()
     print(f"Approximately: {len(combined_string) // 2} Bytes")
     assert Range.verify_proof(proof, lower, upper)
-    assert len(combined_string) // 2 == 464
+    assert len(combined_string) // 2 == 514
 
 
 if __name__ == "__main__":
