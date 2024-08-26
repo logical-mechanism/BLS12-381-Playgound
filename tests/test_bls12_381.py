@@ -86,7 +86,11 @@ def test_computational_bilinearity():
     # e(aU,bV)=e(U,V)^(a*b)
     pl = pair(bv, au)
     pr = pair(v1g2, u1g1) ** (a * b)
+    pr2 = pair(v1g2, scale(u1g1, a * b))
+    pr3 = pair(scale(v1g2, a * b), u1g1)
     assert pr == pl
+    assert pl == pr2
+    assert pr2 == pr3
 
 
 def test_exponent_identity():
