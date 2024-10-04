@@ -38,6 +38,33 @@ def test_elgamal_encryption():
     assert alice_elgamal_sig.prove(alice_elgamal_sig.c1 * alice.x)
 
 
+def test_reverse_mapping_encryption1():
+    alice = Registry()
+    msg = "The message to be signed."
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
+    assert message == msg
+
+
+def test_reverse_mapping_encryption2():
+    alice = Registry()
+    msg = "ffffffffffffffffffffffffffffffffffffffffffffff"
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
+    assert message == msg
+
+
+def test_reverse_mapping_encryption3():
+    alice = Registry()
+    msg = "The length 32 string is a secret"
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
+    assert message == msg
+
+
 def test_boneh_lynn_shacham_signature():
     alice = Registry()
     msg1 = "The first message to be signed."
