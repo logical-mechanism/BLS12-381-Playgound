@@ -5,8 +5,10 @@ from src.Registry.boneh_lynn_shacham import BonehLynnShacham
 from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
+from src.Registry.reversible_mapping import ReverseMapping
 from src.Registry.schnorr import Schnorr
 from src.Registry.util import hexify
+from src.reversible_mapping import map_to_point
 from src.sha3_256 import fiat_shamir_heuristic, generate
 
 
@@ -68,6 +70,15 @@ class Registry:
         c1 = self.g * r
         c2 = M + s
         return ElGamal(c1, c2, generate(M.value))
+
+    def reverse_mapping_encryption(self, message: str) -> ReverseMapping:
+        point, offset = map_to_point(message)
+        M = Element(point)
+        r = self.rng()
+        s = self.u * r
+        c1 = self.g * r
+        c2 = M + s
+        return ReverseMapping(c1, c2, generate(message), offset)
 
     def boneh_lynn_shacham_signature(self, message: str):
         M = Element(hash_to_g2(message))
