@@ -21,10 +21,9 @@ def rng() -> int:
     """
     # Generate a random byte string of the specified length
     random_bits = secrets.randbits(255)
-    if random_bits < curve_order:
-        return random_bits
-    else:
-        return rng()
+    while random_bits >= curve_order:
+        random_bits = secrets.randbits(255)
+    return random_bits
 
 
 def g2_point(scalar: int) -> str:
