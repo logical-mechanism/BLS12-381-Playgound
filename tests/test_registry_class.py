@@ -65,6 +65,23 @@ def test_reverse_mapping_encryption3():
     assert message == msg
 
 
+def test_reverse_mapping_a_value():
+    alice = Registry()
+    value = 44203
+    msg = hex(value)[2:]
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    assert int(message, 16) == value
+
+def test_reverse_mapping_a_value2():
+    alice = Registry()
+    value = 45 * pow(10, 9) * pow(10, 6)
+    msg = hex(value)[2:]
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    print(alice_reverse_mapping_sig)
+    message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    assert int(message, 16) == value
+
 def test_boneh_lynn_shacham_signature():
     alice = Registry()
     msg1 = "The first message to be signed."
