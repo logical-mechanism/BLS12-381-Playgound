@@ -1,6 +1,5 @@
 from py_ecc.bls.g2_primitives import G1_to_pubkey
 from py_ecc.fields import optimized_bls12_381_FQ as FQ
-from py_ecc.optimized_bls12_381 import b
 from py_ecc.optimized_bls12_381 import field_modulus as p
 
 
@@ -16,8 +15,8 @@ def legendre_symbol(a, p):
     if a % p == 0:
         return True  # 0 is always a quadratic residue
     exponent = (p - 1) // 2
-    legendre_symbol = pow(a, exponent, p)
-    return legendre_symbol == 1
+    l_symbol = pow(a, exponent, p)
+    return l_symbol == 1
 
 
 def modular_sqrt(a, p):
@@ -103,11 +102,12 @@ def modular_sqrt(a, p):
 
 
 def short_weierstrass_form(x: int) -> int:
+    # y**2 = x**3 + 4
     return (pow(x, 3, p) + 4) % p
 
 
 def find_valid_point(x: int) -> tuple[int, int, int]:
-    for o in range(p):
+    for o in range(p - x):
         d = (x + o) % p
         y_squared = short_weierstrass_form(d)
         y = modular_sqrt(y_squared, p)
@@ -118,7 +118,8 @@ def find_valid_point(x: int) -> tuple[int, int, int]:
 
 def verify_point_on_curve(point):
     x, y = point
-    return pow(y, 2, p) - pow(x, 3, p) == b
+    # y**2 = x**3 + 4
+    return pow(y, 2, p) - pow(x, 3, p) == 4
 
 
 def compress_point(point):
