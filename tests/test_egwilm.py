@@ -6,6 +6,7 @@ import string
 
 from src.Registry import Registry
 from src.reversible_mapping import map_to_point, string_to_int
+from src.Registry.reversible_mapping import ReverseMapping
 
 
 def test_simple_egwilm():
@@ -45,7 +46,7 @@ def test_message_too_long2():
 
 def test_random_message():
     alice = Registry()
-    # run 100 tests and find some large off set for base64 string of length 47
+    # run 1000 tests and find some large off set for base64 string of length 47
     offsets = []
     for _ in range(1000):
         msg = "".join(
@@ -80,3 +81,30 @@ def test_bob_cant_extract_or_decrypt():
     with pytest.raises(UnicodeDecodeError):
         alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * bob.x)
 
+def test_alice_gives_to_bob():
+    alice = Registry()
+    bob = Registry()
+
+    msg = "".join(
+        random.choices(string.ascii_letters + string.digits + "+" + "/", k=47)
+    )
+
+    alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+
+    # alice computes their randomized public value
+    alice_r = alice_reverse_mapping_sig.c1 * alice.x
+    # bob will need to apply their x to the c1 as an interactive process
+    bob_r = alice_reverse_mapping_sig.c1 * bob.x
+    w = bob_r + ~alice_r
+    bob_c2 = alice_reverse_mapping_sig.c2 + w
+
+    bob_reverse_mapping_sig = ReverseMapping(alice_reverse_mapping_sig.c1, bob_c2, alice_reverse_mapping_sig.h, alice_reverse_mapping_sig.o)
+    alice_message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    print(alice_message)
+
+    bob_message = bob_reverse_mapping_sig.extract(bob_reverse_mapping_sig.c1 * bob.x)
+    print(bob_message)
+    assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
+    assert bob_reverse_mapping_sig.prove(bob_reverse_mapping_sig.c1 * bob.x)
+    assert alice_message == bob_message
+    assert alice_message == msg
