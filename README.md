@@ -19,6 +19,14 @@ pip install -r requirements.txt
 
 The playground usings `pytest` for testing.
 
+Run all tests:
 ```bash
 pytest
 ```
+
+Run single file tests:
+```bash
+pytest tests/test_egwilm.py -s
+```
+
+Add `-s` for print statements to show.
