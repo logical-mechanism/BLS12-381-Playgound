@@ -6,6 +6,7 @@ from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.reversible_mapping import ReverseMapping
+from src.Registry.cramer_shoup import CramerShoup
 from src.Registry.schnorr import Schnorr
 from src.Registry.util import hexify
 from src.reversible_mapping import map_to_point
@@ -85,6 +86,31 @@ class Registry:
         c1 = self.g * r
         c2 = M + s
         return ReverseMapping(c1, c2, generate(message), offset)
+    
+    def cramer_shoup_encryption(self, message: str) -> CramerShoup:
+        point, offset = map_to_point(message)
+        M = Element(point)
+
+        # simple way to generate the secret keys for cs encryption
+        x1 = self.x
+        x2 = int(generate(str(x1)), 16)
+        y1 = int(generate(str(x2)), 16)
+        y2 = int(generate(str(y1)), 16)
+        z = int(generate(str(y2)), 16)
+
+        # the public keys
+        c = x1 * self.g + x2 * self.u
+        d = y1 * self.g + y2 * self.u
+        h = z * self.g
+
+        k = self.rng()
+        u1 = k * self.g
+        u2 = k * self.u
+        e = k * h + M
+        alpha = int(generate(u1.value + u2.value + e.value), 16)
+        v = k * c + (k * alpha) * d
+
+        return CramerShoup(u1, u2, e, v, offset)
 
     def boneh_lynn_shacham_signature(self, message: str):
         M = Element(hash_to_g2(message))

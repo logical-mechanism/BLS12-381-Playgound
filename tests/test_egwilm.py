@@ -1,4 +1,6 @@
 # ElGamal With An Invertible Linear Mapping (EGWILM)
+#
+# ElGamal can be replaced with Cramer-Shoup for CSWILM
 
 import pytest
 import random

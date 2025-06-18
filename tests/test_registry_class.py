@@ -94,6 +94,14 @@ def test_boneh_lynn_shacham_signature():
     alice_bls_aggregate = alice_bls_sig1 + alice_bls_sig2
     assert alice_bls_aggregate.prove()
 
+def test_cramer_shoup_encryption():
+    alice = Registry()
+    msg = "acabbeefcafe"
+    alice_cramer_shoup_sig = alice.cramer_shoup_encryption(msg)
+    print(alice_cramer_shoup_sig)
+    assert alice_cramer_shoup_sig.prove(alice.x)
+    message = alice_cramer_shoup_sig.extract(alice.x)
+    assert message == msg
 
 if __name__ == "__main__":
     pytest.main()
