@@ -20,7 +20,7 @@ class Payment:
     B: Element = Element(g1_identity)
     # generator elements
     Q: Element = Element(g2_point(1))
-    QI: Element = invert(Q.value)
+    QI: Element = Element(invert(Q.value))
 
     def __post_init__(self):
         for i in self.initial:
@@ -35,6 +35,6 @@ class Payment:
         return f"Payment(sig={self.sig}, receiver={self.receiver}, final={self.final})"
 
     def prove(self) -> bool:
-        value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI, self.B.value) == gt_identity
+        value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI.value, self.B.value) == gt_identity
         spend_validation = self.sig.prove()
         return all([value_conservation, spend_validation])

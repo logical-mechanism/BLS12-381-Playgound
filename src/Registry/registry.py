@@ -45,20 +45,26 @@ class Registry:
         return rng()
 
     def schnorr_signature(self) -> Schnorr:
+        if self.x is None:
+            raise ValueError("x must not be None for proof of knowledge")
+        x: int = self.x
         r = self.rng()
         g_r = self.g * r
         c_hex = fiat_shamir_heuristic(self.g.value, g_r.value, self.u.value)
         c = int(c_hex, 16)
-        z = r + c * self.x
+        z = r + c * x
         return Schnorr(hexify(z), g_r, self)
 
     def fiat_shamir_signature(self, message: str) -> FiatShamir:
+        if self.x is None:
+            raise ValueError("x must not be None for proof of knowledge")
+        x: int = self.x
         m = generate(message)
         r = self.rng()
         g_r = self.g * r
         eb = generate(m + g_r.value)
         e = int(eb, 16)
-        z = r + self.x * e
+        z = r + x * e
         return FiatShamir(message, hexify(z), g_r, self)
 
     def elgamal_encryption(self, message: str) -> ElGamal:

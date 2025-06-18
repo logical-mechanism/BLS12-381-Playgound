@@ -1,4 +1,8 @@
 import secrets
+from eth_typing import (
+    BLSPubkey,
+    BLSSignature
+)
 
 from py_ecc.bls.g2_primitives import (G1_to_pubkey, G2_to_signature,
                                       pubkey_to_G1, signature_to_G2)
@@ -65,9 +69,9 @@ def uncompress(element: str) -> tuple:
         tuple: The uncompressed point.
     """
     if len(element) == 96:
-        return pubkey_to_G1(bytes.fromhex(element))
+        return pubkey_to_G1(BLSPubkey(bytes.fromhex(element)))
     else:
-        return signature_to_G2(bytes.fromhex(element))
+        return signature_to_G2(BLSSignature(bytes.fromhex(element)))
 
 
 def compress(element: tuple) -> str:
@@ -82,7 +86,7 @@ def compress(element: tuple) -> str:
     """
     if isinstance(element[2], FQ):
         return G1_to_pubkey(element).hex()
-    if isinstance(element[2], FQ2):
+    else:
         return G2_to_signature(element).hex()
 
 

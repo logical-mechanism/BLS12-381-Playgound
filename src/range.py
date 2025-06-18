@@ -74,7 +74,7 @@ class Range:
 
         # Set up Q and Q Inverse
         self.Q = Element(g2_point(1))
-        self.QI = invert(self.Q.value)
+        self.QI = Element(invert(self.Q.value))
 
         # need to account for the random r values
         self.right = Commitment(0, self.A_commit.r + self.B_commit.r + self.W_commit.r)
@@ -100,7 +100,7 @@ class Range:
         # prove they know the r in B_commit
         check_b = self.schnorr(z_b, b_c, False)
         # prove the pairing range proof
-        check_p = pair(self.Q.value, ((self.Y_commit + self.D_commit + self.D_commit).c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
+        check_p = pair(self.Q.value, ((self.Y_commit + self.D_commit + self.D_commit).c + self.right.c).value) * pair(self.QI.value, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
         # Verifying that the commitments are consistent with the expected range proof
         return check_p and check_a and check_b
 

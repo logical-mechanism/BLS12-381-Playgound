@@ -35,6 +35,7 @@ class Commitment:
         # unique to this commitment
         if self.r is None:
             self.r = rng()
+        assert self.r is not None
         self.c = self.r * g + self.v * h
 
     def hash(self) -> str:
@@ -69,6 +70,9 @@ class Commitment:
         return self.c == other.c and self.r == other.r and self.v == other.v
 
     def prove_knowledge_of_r(self, value: int):
+        if self.r is None:
+            raise ValueError("r must not be None for proof of knowledge")
+        r: int = self.r
         v_commitment = Commitment(value, 0)
         r_commitment = self - v_commitment
         alpha = rng()

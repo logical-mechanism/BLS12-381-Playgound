@@ -10,7 +10,7 @@ class Element:
     value: str
 
     def compressed(self) -> str:
-        return compress(self.value)
+        return compress(self.uncompressed())
 
     def uncompressed(self) -> tuple:
         return uncompress(self.value)
