@@ -23,6 +23,7 @@ class Commitment:
                         it is generated randomly.
         c (Element): The resulting commitment, computed as c = r * g + v * h.
     """
+
     v: int
     r: int | None = None
 

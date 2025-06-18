@@ -45,4 +45,9 @@ def proveDHTuple(scalar: int, left: Registry, right: Registry) -> bool:
     t1_b0_c = left_copy.u + b0_c
 
     # Check if the computed values match and if scalar is non-zero and g and u are distinct
-    return a_z == t0_a0_c and b_z == t1_b0_c and scalar != 0 and right.g.value != right.u.value
+    return (
+        a_z == t0_a0_c
+        and b_z == t1_b0_c
+        and scalar != 0
+        and right.g.value != right.u.value
+    )

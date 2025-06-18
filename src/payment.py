@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from src.bls12_381 import (g1_identity, g1_point, g2_point, gt_identity,
-                           invert, pair)
+from src.bls12_381 import g1_identity, g1_point, g2_point, gt_identity, invert, pair
 from src.Registry.boneh_lynn_shacham import BonehLynnShacham
 from src.Registry.element import Element
 from src.Registry.registry import Registry
@@ -35,6 +34,9 @@ class Payment:
         return f"Payment(sig={self.sig}, receiver={self.receiver}, final={self.final})"
 
     def prove(self) -> bool:
-        value_conservation = pair(self.Q.value, self.A.value) * pair(self.QI.value, self.B.value) == gt_identity
+        value_conservation = (
+            pair(self.Q.value, self.A.value) * pair(self.QI.value, self.B.value)
+            == gt_identity
+        )
         spend_validation = self.sig.prove()
         return all([value_conservation, spend_validation])

@@ -73,6 +73,7 @@ def test_reverse_mapping_a_value():
     message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
     assert int(message, 16) == value
 
+
 def test_reverse_mapping_a_value2():
     alice = Registry()
     value = 45 * pow(10, 9) * pow(10, 6)
@@ -81,6 +82,7 @@ def test_reverse_mapping_a_value2():
     print(alice_reverse_mapping_sig)
     message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
     assert int(message, 16) == value
+
 
 def test_boneh_lynn_shacham_signature():
     alice = Registry()

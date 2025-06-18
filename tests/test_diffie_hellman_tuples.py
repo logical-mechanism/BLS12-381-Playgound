@@ -48,7 +48,9 @@ def test_sigma_statement():
     alice_random.rerandomize(y)
     bob_random = copy.deepcopy(bob)
     bob_random.rerandomize(y)
-    alice_outcome = proveDHTuple(y, alice, alice_random) or proveDHTuple(y, alice, bob_random)
+    alice_outcome = proveDHTuple(y, alice, alice_random) or proveDHTuple(
+        y, alice, bob_random
+    )
     bob_outcome = proveDHTuple(y, bob, alice_random) or proveDHTuple(y, bob, bob_random)
     assert alice_outcome
     assert bob_outcome

@@ -10,7 +10,9 @@ def test_lovelace_equals_lovelace():
 
 
 def test_mixed_equals_mixed():
-    assert Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}}) == Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}})
+    assert Value({"": {"": 1}, "acab": {"beef": 1, "face": 1}}) == Value(
+        {"": {"": 1}, "acab": {"beef": 1, "face": 1}}
+    )
 
 
 def test_not_equal_values():

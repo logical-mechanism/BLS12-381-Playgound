@@ -1,4 +1,3 @@
-# src/Registry/element.py
 from dataclasses import dataclass
 
 from src.bls12_381 import combine, compress, invert, scale, uncompress
