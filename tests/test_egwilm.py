@@ -3,6 +3,7 @@
 import pytest
 import random
 import string
+import time
 
 from src.Registry import Registry
 from src.reversible_mapping import map_to_point, string_to_int
@@ -88,6 +89,7 @@ def test_alice_gives_to_bob():
     msg = "".join(
         random.choices(string.ascii_letters + string.digits + "+" + "/", k=47)
     )
+    "/gETt53mvmuPXBJjBiVLmzyQ+MaskyfwJU9UdcHfeCHgD7x"
 
     alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
 
@@ -102,7 +104,10 @@ def test_alice_gives_to_bob():
     alice_message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
     print(alice_message)
 
+    t0 = time.perf_counter()
     bob_message = bob_reverse_mapping_sig.extract(bob_reverse_mapping_sig.c1 * bob.x)
+    elapsed = time.perf_counter() - t0
+    print(elapsed, 192512 * elapsed / 60)
     print(bob_message)
     assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
     assert bob_reverse_mapping_sig.prove(bob_reverse_mapping_sig.c1 * bob.x)
