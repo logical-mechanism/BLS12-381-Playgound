@@ -1,6 +1,8 @@
 # ElGamal With An Invertible Linear Mapping (EGWILM)
 #
 # ElGamal can be replaced with Cramer-Shoup for CSWILM
+#
+# EGWILM has delegation via proxy re-encryption
 
 import pytest
 import random
@@ -8,8 +10,9 @@ import string
 import time
 
 from src.Registry import Registry
-from src.reversible_mapping import map_to_point, string_to_int
+from src.reversible_mapping import map_to_point, string_to_int, point_to_map
 from src.Registry.reversible_mapping import ReverseMapping
+from src.sha3_256 import generate, hash_to_int
 
 
 def test_simple_egwilm():
@@ -93,34 +96,41 @@ def test_alice_gives_to_bob():
     msg = "".join(
         random.choices(string.ascii_letters + string.digits + "+" + "/", k=47)
     )
-    "/gETt53mvmuPXBJjBiVLmzyQ+MaskyfwJU9UdcHfeCHgD7x"
 
     alice_reverse_mapping_sig = alice.reverse_mapping_encryption(msg)
+    # print(alice_reverse_mapping_sig)
 
-    # alice computes their randomized public value
-    alice_r = alice_reverse_mapping_sig.c1 * alice.x
-    # bob will need to apply their x to the c1 as an interactive process
-    bob_r = alice_reverse_mapping_sig.c1 * bob.x
-    w = bob_r + ~alice_r
-    bob_c2 = alice_reverse_mapping_sig.c2 + w
+    # now bob needs access so alice creates the shared key
+    shared = alice.x * bob.u
+    k = hash_to_int(shared.value)  # we need a hash to int function
+    g_k = k * alice.g
+    g_k = ~g_k  # inverse
 
+    # use the shared key to change the c1 point
+    # now bob has access to the encrypted message
     bob_reverse_mapping_sig = ReverseMapping(
-        alice_reverse_mapping_sig.c1,
-        bob_c2,
+        g_k + alice.x * alice_reverse_mapping_sig.c1,
+        alice_reverse_mapping_sig.c2,
         alice_reverse_mapping_sig.h,
         alice_reverse_mapping_sig.o,
     )
+
+    # now bob needs to decrypt the message
+    shared = bob.x * alice.u
+    k = hash_to_int(shared.value)
+    g_k = k * bob.g
+    w = g_k + bob_reverse_mapping_sig.c1
+    w = ~w
+
+    m = bob_reverse_mapping_sig.c2 + w
+    bob_message = point_to_map(m.value, bob_reverse_mapping_sig.o)
+    # print(bob_message)
+
     alice_message = alice_reverse_mapping_sig.extract(
         alice_reverse_mapping_sig.c1 * alice.x
     )
-    print(alice_message)
+    # print(alice_message)
 
-    t0 = time.perf_counter()
-    bob_message = bob_reverse_mapping_sig.extract(bob_reverse_mapping_sig.c1 * bob.x)
-    elapsed = time.perf_counter() - t0
-    print(elapsed, 192512 * elapsed / 60)
-    print(bob_message)
     assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
-    assert bob_reverse_mapping_sig.prove(bob_reverse_mapping_sig.c1 * bob.x)
     assert alice_message == bob_message
     assert alice_message == msg
