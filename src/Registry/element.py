@@ -1,4 +1,3 @@
-# src/Registry/element.py
 from dataclasses import dataclass
 
 from src.bls12_381 import combine, compress, invert, scale, uncompress
@@ -10,7 +9,7 @@ class Element:
     value: str
 
     def compressed(self) -> str:
-        return compress(self.value)
+        return compress(self.uncompressed())
 
     def uncompressed(self) -> tuple:
         return uncompress(self.value)

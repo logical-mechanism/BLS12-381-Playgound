@@ -23,6 +23,7 @@ class Range:
         lower_bound (int | None): The lower bound of the range.
         upper_bound (int | None): The upper bound of the range.
     """
+
     secret_value: int
     lower_bound: int | None = None
     upper_bound: int | None = None
@@ -44,14 +45,18 @@ class Range:
             self.upper_bound = field_order - 1
         # upper bound cant be larger than the field prime
         if self.upper_bound > field_order - 1:
-            raise ValueError("Invalid range proof: Upper bound must be less than field order.")
+            raise ValueError(
+                "Invalid range proof: Upper bound must be less than field order."
+            )
 
         # if the lower bound is not set it becomes one
         if self.lower_bound is None:
             self.lower_bound = 0
         # lower bound cant be smaller then the identiy
         if self.lower_bound < 0:
-            raise ValueError("Invalid range proof: Lower bound must be greater than zero.")
+            raise ValueError(
+                "Invalid range proof: Lower bound must be greater than zero."
+            )
 
         # Set up D commitment
         self.D_commit = Commitment(self.secret_value)
@@ -74,7 +79,7 @@ class Range:
 
         # Set up Q and Q Inverse
         self.Q = Element(g2_point(1))
-        self.QI = invert(self.Q.value)
+        self.QI = Element(invert(self.Q.value))
 
         # need to account for the random r values
         self.right = Commitment(0, self.A_commit.r + self.B_commit.r + self.W_commit.r)
@@ -100,7 +105,21 @@ class Range:
         # prove they know the r in B_commit
         check_b = self.schnorr(z_b, b_c, False)
         # prove the pairing range proof
-        check_p = pair(self.Q.value, ((self.Y_commit + self.D_commit + self.D_commit).c + self.right.c).value) * pair(self.QI, (self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c).value) == gt_identity
+        check_p = (
+            pair(
+                self.Q.value,
+                (
+                    (self.Y_commit + self.D_commit + self.D_commit).c + self.right.c
+                ).value,
+            )
+            * pair(
+                self.QI.value,
+                (
+                    self.A_commit.c + self.B_commit.c + self.W_commit.c + self.left.c
+                ).value,
+            )
+            == gt_identity
+        )
         # Verifying that the commitments are consistent with the expected range proof
         return check_p and check_a and check_b
 
@@ -144,26 +163,45 @@ class Range:
         #
         # Verify A
         #
-        r_upper_commitment = Element(proof["A"]) + Element(invert(Commitment(upper_bound, 0).c.value))
-        beta = generate(proof['ac'] + r_upper_commitment.value)
+        r_upper_commitment = Element(proof["A"]) + Element(
+            invert(Commitment(upper_bound, 0).c.value)
+        )
+        beta = generate(proof["ac"] + r_upper_commitment.value)
         b = int(beta, 16)
-        z_commitment = Commitment(0, int(proof['Za'], 16))
-        right = Element(proof['ac']) + (b * r_upper_commitment)
+        z_commitment = Commitment(0, int(proof["Za"], 16))
+        right = Element(proof["ac"]) + (b * r_upper_commitment)
         check_a = z_commitment.c.value == right.value
         #
         # Verify B
         #
-        r_lower_commitment = Element(proof["B"]) + Element(invert(Commitment(lower_bound, 0).c.value))
-        beta = generate(proof['bc'] + r_lower_commitment.value)
+        r_lower_commitment = Element(proof["B"]) + Element(
+            invert(Commitment(lower_bound, 0).c.value)
+        )
+        beta = generate(proof["bc"] + r_lower_commitment.value)
         b = int(beta, 16)
-        z_commitment = Commitment(0, int(proof['Zb'], 16))
-        right = Element(proof['bc']) + (b * r_lower_commitment)
+        z_commitment = Commitment(0, int(proof["Zb"], 16))
+        right = Element(proof["bc"]) + (b * r_lower_commitment)
         check_b = z_commitment.c.value == right.value
         #
         # Verify Pairing
         #
         Q = Element(g2_point(1))
         QI = invert(Q.value)
-        check_p = pair(Q.value, (Element(proof['Y']) + Element(proof['D']) + Element(proof['R'])).value) * pair(QI, (Element(proof["A"]) + Element(proof["B"]) + Element(proof["W"]) + Element(proof["L"])).value) == gt_identity
+        check_p = (
+            pair(
+                Q.value,
+                (Element(proof["Y"]) + Element(proof["D"]) + Element(proof["R"])).value,
+            )
+            * pair(
+                QI,
+                (
+                    Element(proof["A"])
+                    + Element(proof["B"])
+                    + Element(proof["W"])
+                    + Element(proof["L"])
+                ).value,
+            )
+            == gt_identity
+        )
         # Verifying that the commitments are consistent with the expected range proof
         return check_a and check_b and check_p

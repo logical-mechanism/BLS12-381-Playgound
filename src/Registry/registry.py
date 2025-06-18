@@ -6,6 +6,7 @@ from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
 from src.Registry.fiat_shamir import FiatShamir
 from src.Registry.reversible_mapping import ReverseMapping
+from src.Registry.cramer_shoup import CramerShoup
 from src.Registry.schnorr import Schnorr
 from src.Registry.util import hexify
 from src.reversible_mapping import map_to_point
@@ -45,20 +46,26 @@ class Registry:
         return rng()
 
     def schnorr_signature(self) -> Schnorr:
+        if self.x is None:
+            raise ValueError("x must not be None for proof of knowledge")
+        x: int = self.x
         r = self.rng()
         g_r = self.g * r
         c_hex = fiat_shamir_heuristic(self.g.value, g_r.value, self.u.value)
         c = int(c_hex, 16)
-        z = r + c * self.x
+        z = r + c * x
         return Schnorr(hexify(z), g_r, self)
 
     def fiat_shamir_signature(self, message: str) -> FiatShamir:
+        if self.x is None:
+            raise ValueError("x must not be None for proof of knowledge")
+        x: int = self.x
         m = generate(message)
         r = self.rng()
         g_r = self.g * r
         eb = generate(m + g_r.value)
         e = int(eb, 16)
-        z = r + self.x * e
+        z = r + x * e
         return FiatShamir(message, hexify(z), g_r, self)
 
     def elgamal_encryption(self, message: str) -> ElGamal:
@@ -79,6 +86,31 @@ class Registry:
         c1 = self.g * r
         c2 = M + s
         return ReverseMapping(c1, c2, generate(message), offset)
+    
+    def cramer_shoup_encryption(self, message: str) -> CramerShoup:
+        point, offset = map_to_point(message)
+        M = Element(point)
+
+        # simple way to generate the secret keys for cs encryption
+        x1 = self.x
+        x2 = int(generate(str(x1)), 16)
+        y1 = int(generate(str(x2)), 16)
+        y2 = int(generate(str(y1)), 16)
+        z = int(generate(str(y2)), 16)
+
+        # the public keys
+        c = x1 * self.g + x2 * self.u
+        d = y1 * self.g + y2 * self.u
+        h = z * self.g
+
+        k = self.rng()
+        u1 = k * self.g
+        u2 = k * self.u
+        e = k * h + M
+        alpha = int(generate(u1.value + u2.value + e.value), 16)
+        v = k * c + (k * alpha) * d
+
+        return CramerShoup(u1, u2, e, v, offset)
 
     def boneh_lynn_shacham_signature(self, message: str):
         M = Element(hash_to_g2(message))

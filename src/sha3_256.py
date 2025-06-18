@@ -23,7 +23,7 @@ def generate(input_string: str) -> str:
         str: The SHA3-256 hash digest of the input string.
     """
     # Encode the input string to bytes before hashing
-    encoded_string = input_string.encode('utf-8')
+    encoded_string = input_string.encode("utf-8")
 
     # Calculate the hash digest using SHA3-256
     hash_digest = sha3_256(encoded_string).hexdigest()

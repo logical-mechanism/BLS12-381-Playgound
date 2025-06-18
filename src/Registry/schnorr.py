@@ -1,4 +1,3 @@
-# src/Registry/element.py
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
 class Schnorr:
     z: str
     r: Element
-    registry: 'Registry'
+    registry: "Registry"
 
     def __str__(self):
         return f"Schnorr(z={self.z}, r={self.r.value}, registry={self.registry})"
@@ -21,7 +20,9 @@ class Schnorr:
     def prove(self) -> bool:
         z = int(self.z, 16)
         g_z = self.registry.g * z
-        c_hex = fiat_shamir_heuristic(self.registry.g.value, self.r.value, self.registry.u.value)
+        c_hex = fiat_shamir_heuristic(
+            self.registry.g.value, self.r.value, self.registry.u.value
+        )
         c = int(c_hex, 16)
         u_c = self.registry.u * c
         rhs = self.r + u_c

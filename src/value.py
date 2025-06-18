@@ -47,7 +47,9 @@ class Value:
                     result[policy][asset] = result[policy].get(asset, 0) - quantity
             else:
                 # we are subtracting from zero so it would be negative
-                result[policy] = {asset: -quantity for asset, quantity in assets.items()}
+                result[policy] = {
+                    asset: -quantity for asset, quantity in assets.items()
+                }
 
         # Create the result Value object and remove zero entries
         output = Value(result)
@@ -96,7 +98,9 @@ class Value:
         """
         inner_copy = self.inner.copy()  # create a copy so we can delete
         for policy, assets in inner_copy.items():
-            assets_to_remove = [asset for asset, amount in assets.items() if amount == 0]
+            assets_to_remove = [
+                asset for asset, amount in assets.items() if amount == 0
+            ]
             for asset in assets_to_remove:
                 del self.inner[policy][asset]
             if self.inner[policy] == {}:

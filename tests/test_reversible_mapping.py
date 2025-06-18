@@ -1,9 +1,14 @@
 import pytest
 from py_ecc.optimized_bls12_381 import field_modulus as p
 
-from src.reversible_mapping import (find_valid_point, map_to_point,
-                                    point_to_map, short_weierstrass_form,
-                                    string_to_int, verify_point_on_curve)
+from src.reversible_mapping import (
+    find_valid_point,
+    map_to_point,
+    point_to_map,
+    short_weierstrass_form,
+    string_to_int,
+    verify_point_on_curve,
+)
 
 
 def test_string_to_int():

@@ -4,7 +4,7 @@ from py_ecc.optimized_bls12_381 import field_modulus as p
 
 
 def string_to_int(s):
-    data_int = int(s.encode('utf-8').hex(), 16)
+    data_int = int(s.encode("utf-8").hex(), 16)
     if data_int >= p:
         raise ValueError("Data too large to fit in field")
     return data_int
@@ -20,21 +20,21 @@ def legendre_symbol(a, p):
 
 
 def modular_sqrt(a, p):
-    """ Find a quadratic residue (mod p) of 'a'. p
-        must be an odd prime.
+    """Find a quadratic residue (mod p) of 'a'. p
+    must be an odd prime.
 
-        Solve the congruence of the form:
-            x^2 = a (mod p)
-        And returns x. Note that p - x is also a root.
+    Solve the congruence of the form:
+        x^2 = a (mod p)
+    And returns x. Note that p - x is also a root.
 
-        0 is returned is no square root exists for
-        these a and p.
+    0 is returned is no square root exists for
+    these a and p.
 
-        The Tonelli-Shanks algorithm is used (except
-        for some simple cases in which the solution
-        is known from an identity). This algorithm
-        runs in polynomial time (unless the
-        generalized Riemann hypothesis is false).
+    The Tonelli-Shanks algorithm is used (except
+    for some simple cases in which the solution
+    is known from an identity). This algorithm
+    runs in polynomial time (unless the
+    generalized Riemann hypothesis is false).
     """
     # Simple cases
     #
@@ -143,5 +143,5 @@ def map_to_point(s: str) -> tuple[str, int]:
 def point_to_map(p: str, o: int) -> str:
     compressed_point = bytes.fromhex(p)
     x_bytes = compressed_point[1:]
-    x = int.from_bytes(x_bytes, byteorder='big')
-    return bytes.fromhex(hex(x - o)[2:]).decode('ascii')
+    x = int.from_bytes(x_bytes, byteorder="big")
+    return bytes.fromhex(hex(x - o)[2:]).decode("ascii")

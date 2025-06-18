@@ -1,4 +1,6 @@
 # ElGamal With An Invertible Linear Mapping (EGWILM)
+#
+# ElGamal can be replaced with Cramer-Shoup for CSWILM
 
 import pytest
 import random
@@ -67,6 +69,7 @@ def test_random_message():
     assert alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * alice.x)
     assert message == msg
 
+
 def test_bob_cant_extract_or_decrypt():
     alice = Registry()
     bob = Registry()
@@ -78,9 +81,10 @@ def test_bob_cant_extract_or_decrypt():
 
     with pytest.raises(ValueError):
         alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * bob.x)
-    
+
     with pytest.raises(UnicodeDecodeError):
         alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * bob.x)
+
 
 def test_alice_gives_to_bob():
     alice = Registry()
@@ -100,8 +104,15 @@ def test_alice_gives_to_bob():
     w = bob_r + ~alice_r
     bob_c2 = alice_reverse_mapping_sig.c2 + w
 
-    bob_reverse_mapping_sig = ReverseMapping(alice_reverse_mapping_sig.c1, bob_c2, alice_reverse_mapping_sig.h, alice_reverse_mapping_sig.o)
-    alice_message = alice_reverse_mapping_sig.extract(alice_reverse_mapping_sig.c1 * alice.x)
+    bob_reverse_mapping_sig = ReverseMapping(
+        alice_reverse_mapping_sig.c1,
+        bob_c2,
+        alice_reverse_mapping_sig.h,
+        alice_reverse_mapping_sig.o,
+    )
+    alice_message = alice_reverse_mapping_sig.extract(
+        alice_reverse_mapping_sig.c1 * alice.x
+    )
     print(alice_message)
 
     t0 = time.perf_counter()

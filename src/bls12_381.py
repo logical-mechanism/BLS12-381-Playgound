@@ -1,13 +1,27 @@
 import secrets
+from eth_typing import BLSPubkey, BLSSignature
 
-from py_ecc.bls.g2_primitives import (G1_to_pubkey, G2_to_signature,
-                                      pubkey_to_G1, signature_to_G2)
+from py_ecc.bls.g2_primitives import (
+    G1_to_pubkey,
+    G2_to_signature,
+    pubkey_to_G1,
+    signature_to_G2,
+)
 from py_ecc.bls.hash_to_curve import hash_to_G2
 from py_ecc.fields import optimized_bls12_381_FQ as FQ
 from py_ecc.fields import optimized_bls12_381_FQ2 as FQ2
 from py_ecc.fields import optimized_bls12_381_FQ12 as FQ12
-from py_ecc.optimized_bls12_381 import (G1, G2, Z1, Z2, add, curve_order,
-                                        multiply, neg, pairing)
+from py_ecc.optimized_bls12_381 import (
+    G1,
+    G2,
+    Z1,
+    Z2,
+    add,
+    curve_order,
+    multiply,
+    neg,
+    pairing,
+)
 
 from src.sha3_256 import hash_function
 
@@ -65,9 +79,9 @@ def uncompress(element: str) -> tuple:
         tuple: The uncompressed point.
     """
     if len(element) == 96:
-        return pubkey_to_G1(bytes.fromhex(element))
+        return pubkey_to_G1(BLSPubkey(bytes.fromhex(element)))
     else:
-        return signature_to_G2(bytes.fromhex(element))
+        return signature_to_G2(BLSSignature(bytes.fromhex(element)))
 
 
 def compress(element: tuple) -> str:
@@ -82,7 +96,7 @@ def compress(element: tuple) -> str:
     """
     if isinstance(element[2], FQ):
         return G1_to_pubkey(element).hex()
-    if isinstance(element[2], FQ2):
+    else:
         return G2_to_signature(element).hex()
 
 
@@ -152,7 +166,13 @@ def hash_to_g2(message: str):
     Returns:
         str: The compressed point as a hexadecimal string.
     """
-    return compress(hash_to_G2(bytes.fromhex(message), "BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_".encode("utf-8"), hash_function()))
+    return compress(
+        hash_to_G2(
+            bytes.fromhex(message),
+            "BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_".encode("utf-8"),
+            hash_function(),
+        )
+    )
 
 
 # identity elements

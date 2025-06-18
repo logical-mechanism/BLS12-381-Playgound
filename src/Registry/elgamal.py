@@ -1,4 +1,3 @@
-# src/Registry/element.py
 from dataclasses import dataclass
 
 from src.Registry.element import Element

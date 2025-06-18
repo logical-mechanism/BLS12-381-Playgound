@@ -1,4 +1,3 @@
-# src/Registry/element.py
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -14,7 +13,7 @@ class FiatShamir:
     m: str
     z: str
     r: Element
-    registry: 'Registry'
+    registry: "Registry"
 
     def __str__(self):
         return f"FiatShamir(m={self.m}, z={self.z}, r={self.r.value}, registry={self.registry})"
