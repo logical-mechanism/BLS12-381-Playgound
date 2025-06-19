@@ -1,13 +1,12 @@
 # ElGamal With An Invertible Linear Mapping (EGWILM)
 #
-# ElGamal can be replaced with Cramer-Shoup for CSWILM
+# ElGamal can be replaced with Cramer-Shoup @see test_cswilm.py
 #
-# EGWILM has delegation via proxy re-encryption
+# EGWILM has delegation via proxy re-encryption (PRE)
 
 import pytest
 import random
 import string
-import time
 
 from src.Registry import Registry
 from src.reversible_mapping import map_to_point, string_to_int, point_to_map
