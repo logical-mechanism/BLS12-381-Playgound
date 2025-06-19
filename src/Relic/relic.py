@@ -1,6 +1,6 @@
 # This class is special built just for cswilm-pre
 #
-
+from __future__ import annotations
 from dataclasses import dataclass, field
 from src.Registry.element import Element
 from src.Relic.cramer_shoup import CramerShoup
