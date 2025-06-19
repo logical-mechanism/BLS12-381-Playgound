@@ -64,7 +64,7 @@ class Relic:
         return CramerShoup(u1, u2, e, v, offset)
 
     def prove(self, cyphertext: CramerShoup) -> bool:
-        if self.y1 is None or self.y2 is None:
+        if self.x1 is None or self.x2 is None or self.y1 is None or self.y2 is None:
             return False
         alpha = hash_to_int(
             cyphertext.u1.value + cyphertext.u2.value + cyphertext.e.value
