@@ -1,0 +1,1 @@
+from .relic import Relic
