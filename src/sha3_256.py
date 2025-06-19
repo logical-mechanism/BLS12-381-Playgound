@@ -53,3 +53,16 @@ def fiat_shamir_heuristic(gb: str, grb: str, ub: str) -> str:
     hash_result = sha3_256(unhexed_bytes).digest().hex()
 
     return hash_result
+
+
+def hash_to_int(msg: str) -> int:
+    """
+    Calculates the integer value of some hash
+
+    Parameters:
+    msg (str): The message to be hashed.
+
+    Returns:
+    int: The resulting integer.
+    """
+    return int(generate(msg), 16)
