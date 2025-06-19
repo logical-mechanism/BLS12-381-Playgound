@@ -12,6 +12,9 @@ from src.Registry import Registry
 from src.reversible_mapping import map_to_point, string_to_int, point_to_map
 from src.Registry.reversible_mapping import ReverseMapping
 from src.sha3_256 import generate, hash_to_int
+from src.Registry.element import Element
+from src.bls12_381 import g2_point, hash_to_g2, rng, pair
+
 
 
 def test_simple_egwilm():
@@ -86,6 +89,32 @@ def test_bob_cant_extract_or_decrypt():
 
     with pytest.raises(UnicodeDecodeError):
         alice_reverse_mapping_sig.prove(alice_reverse_mapping_sig.c1 * bob.x)
+
+
+def test_alice_and_bob_have_similar_messages():
+    alice = Registry()
+    bob = Registry()
+
+    msg = "".join(
+        random.choices(string.ascii_letters + string.digits + "+" + "/", k=47)
+    )
+
+    point, _ = map_to_point(msg)
+    M = Element(point)
+    r = rng()
+    s = alice.u * r
+    a_c2 = M + s
+
+    w = rng()
+    s = bob.u * w
+    b_c2 = M + s
+
+    # since alice knows r and w, a proof can be formed to bob that the message is the same as alice
+    q = g2_point(1)
+    q_r = g2_point(r)
+    q_w = g2_point(w)
+
+    assert pair(q_w, bob.u.value) * pair(q, a_c2.value) == pair(q_r, alice.u.value) * pair(q, b_c2.value)
 
 
 def test_alice_gives_to_bob():

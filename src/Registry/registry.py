@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.bls12_381 import g1_point, hash_to_g2, rng, invert
+from src.bls12_381 import g1_point, hash_to_g2, rng
 from src.Registry.boneh_lynn_shacham import BonehLynnShacham
 from src.Registry.element import Element
 from src.Registry.elgamal import ElGamal
